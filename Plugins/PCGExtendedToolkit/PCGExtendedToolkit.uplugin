@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "0.73.0",
+	"VersionName": "0.73.1",
 	"FriendlyName": "PCGExtendedToolkit",
 	"Description": "A rather large toolset that expand on existing PCG capabilities in unique ways.",
 	"Category": "PCG",
@@ -342,6 +342,19 @@
 		},
 		{
 			"Name": "PCGExMatching",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux",
+				"LinuxArm64"
+			]
+		},
+		{
+			"Name": "PCGExNoise3D",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [

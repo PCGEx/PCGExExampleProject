@@ -35,7 +35,9 @@ public class PCGExElementsTensors : ModuleRules
 				"PCGExCore",
 				"PCGExFilters",
 				"PCGExHeuristics",
+				"PCGExNoise3D",
 				"PCGExFoundations",
+				"PCGExBlending",
 				"PCGExElementsProbing",
 			}
 		);

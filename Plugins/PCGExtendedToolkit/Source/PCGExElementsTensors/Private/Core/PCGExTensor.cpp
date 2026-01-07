@@ -10,10 +10,13 @@
 #include "Helpers/PCGExStreamingHelpers.h"
 #include "Math/PCGExMathAxis.h"
 #include "Math/PCGExMathBounds.h"
+#include "Async/ParallelFor.h"
 
 PCGExTensor::FTensorSample FPCGExTensorSamplingMutationsDetails::Mutate(const FTransform& InProbe, PCGExTensor::FTensorSample InSample) const
 {
 	if (bInvert) { InSample.DirectionAndSize *= -1; }
+
+	if (bScaleDirectionAndSize) { InSample.DirectionAndSize *= Scale; }
 
 	if (bBidirectional)
 	{
@@ -88,37 +91,51 @@ namespace PCGExTensor
 		const FBox InBounds = InFactory->InputDataFacade->GetIn()->GetBounds();
 		Octree = MakeShared<PCGExOctree::FItemOctree>(InBounds.GetCenter(), (InBounds.GetExtent() + FVector(10)).Length());
 
-		PCGExArrayHelpers::InitArray(Transforms, NumEffectors);
-		PCGExArrayHelpers::InitArray(Radiuses, NumEffectors);
-		PCGExArrayHelpers::InitArray(Potencies, NumEffectors);
-		PCGExArrayHelpers::InitArray(Weights, NumEffectors);
+		PCGExArrayHelpers::InitArray(PackedEffectors, NumEffectors);
+		PCGExArrayHelpers::InitArray(Rotations, NumEffectors);
 
 		TConstPCGValueRange<FTransform> InTransforms = InPoints->GetConstTransformValueRange();
-		TConstPCGValueRange<float> InSteepness = InPoints->GetConstSteepnessValueRange();
-
+		
+		TArray<FVector> TempExtents;
+		TempExtents.SetNumUninitialized(NumEffectors);
+		
 		// Pack per-point data
-		for (int i = 0; i < NumEffectors; i++)
-		{
-			const FTransform& Transform = InTransforms[i];
-			Transforms[i] = InTransforms[i];
-			Potencies[i] = PotencyValue->Read(i);
-			Weights[i] = WeightValue->Read(i);
+		PCGEX_PARALLEL_FOR(
+			NumEffectors,
 
-			PrepareSinglePoint(i);
+			const FTransform& Transform = InTransforms[i];
+			Rotations[i] = Transform.GetRotation();
+
+			FPackedEffector& PackedEffector = PackedEffectors[i];
+			PackedEffector.Location = Transform.GetLocation();
+			PackedEffector.Potency = PotencyValue->Read(i);
+			PackedEffector.Weight = WeightValue->Read(i);
 
 			PCGExData::FConstPoint Point(InPoints, i);
 			FVector Extents = PCGExMath::GetLocalBounds<EPCGExPointBoundsSource::ScaledBounds>(Point).GetExtent();
+			TempExtents[i] = Extents;
 
-			Radiuses[i] = Extents.SquaredLength();
+			PackedEffector.RadiusSquared = Extents.SquaredLength();
 
-			const float Steepness = InSteepness[i];
-			Octree->AddElement(PCGExOctree::FItem(i, FBoxSphereBounds(FBox((2 - Steepness) * (Extents * -1), (2 - Steepness) * Extents).TransformBy(Transform)))); // Fetch to max
+			PrepareSinglePoint(i, Transform, PackedEffector);
+		)
+		
+		// Build octree outside of parallel for :x
+		TConstPCGValueRange<float> InSteepness = InPoints->GetConstSteepnessValueRange();
+		for (int i = 0; i < NumEffectors; i++)
+		{
+			const float Steepness = 2 - InSteepness[i];
+			const FVector& Extents = TempExtents[i];
+			Octree->AddElement(PCGExOctree::FItem(i, FBoxSphereBounds(FBox(Steepness * (-Extents), Steepness * Extents).TransformBy(InTransforms[i])))); // Fetch to max
 		}
+
+		//for (const FPackedEffector& E : PackedEffectors) { MaxEffectorRadius = FMath::Max(MaxEffectorRadius, E.RadiusSquared); }
+		//MaxEffectorRadius = FMath::Sqrt(MaxEffectorRadius);
 
 		return true;
 	}
 
-	void FEffectorsArray::PrepareSinglePoint(const int32 Index)
+	void FEffectorsArray::PrepareSinglePoint(const int32 Index, const FTransform& InTransform, FPackedEffector& OutPackedEffector)
 	{
 	}
 

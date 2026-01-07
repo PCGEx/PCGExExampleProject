@@ -39,7 +39,7 @@ namespace PCGExBlending
 
 	// FProxyDataBlender implementation
 
-	void FProxyDataBlender::Blend(const int32 SourceIndexA, const int32 SourceIndexB, const int32 TargetIndex, const double Weight)
+	void FProxyDataBlender::Blend(const int32 SourceIndexA, const int32 SourceIndexB, const int32 TargetIndex, const double Weight) const
 	{
 		if (!Operation || !A || !C) { return; }
 
@@ -48,33 +48,100 @@ namespace PCGExBlending
 		PCGExTypes::FScopedTypedValue ValB(UnderlyingType);
 		PCGExTypes::FScopedTypedValue ValC(UnderlyingType);
 
-		// Read A
 		A->GetVoid(SourceIndexA, ValA.GetRaw());
+		B->GetVoid(SourceIndexB, ValB.GetRaw());
 
-		// Read B (from B proxy if available, otherwise use A)
-		if (B)
-		{
-			B->GetVoid(SourceIndexB, ValB.GetRaw());
-		}
-		else
-		{
-			// Copy A to B for modes that need both operands
-			if (Operation->NeedsLifecycleManagement()) { Operation->CopyValue(ValA.GetRaw(), ValB.GetRaw()); }
-			else { FMemory::Memcpy(ValB.GetRaw(), ValA.GetRaw(), Operation->GetValueSize()); }
-		}
-
-		// Blend
 		Operation->Blend(ValA.GetRaw(), ValB.GetRaw(), Weight, ValC.GetRaw());
-
-		// Write result
 		C->SetVoid(TargetIndex, ValC.GetRaw());
+	}
+
+	void FProxyDataBlender::BlendScope(const PCGExMT::FScope& Scope, const double Weight) const
+	{
+		if (!Operation || !A || !C) { return; }
+
+		// Use FScopedTypedValue for safe working buffers
+		PCGExTypes::FScopedTypedValue ValA(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValB(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValC(UnderlyingType);
+
+		PCGEX_SCOPE_LOOP(Index)
+		{
+			A->GetVoid(Index, ValA.GetRaw());
+			B->GetVoid(Index, ValB.GetRaw());
+
+			Operation->Blend(ValA.GetRaw(), ValB.GetRaw(), Weight, ValC.GetRaw());
+			C->SetVoid(Index, ValC.GetRaw());
+		}
+	}
+
+	void FProxyDataBlender::BlendScope(const PCGExMT::FScope& Scope, TArrayView<const double> Weights) const
+	{
+		if (!Operation || !A || !C) { return; }
+
+		// Use FScopedTypedValue for safe working buffers
+		PCGExTypes::FScopedTypedValue ValA(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValB(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValC(UnderlyingType);
+
+		PCGEX_SCOPE_LOOP(Index)
+		{
+			A->GetVoid(Index, ValA.GetRaw());
+			B->GetVoid(Index, ValB.GetRaw());
+
+			Operation->Blend(ValA.GetRaw(), ValB.GetRaw(), Weights[Index - Scope.Start], ValC.GetRaw());
+			C->SetVoid(Index, ValC.GetRaw());
+		}
+	}
+
+	void FProxyDataBlender::BlendScope(const PCGExMT::FScope& Scope, TArrayView<const int8> Mask, const double Weight) const
+	{
+		if (!Operation || !A || !C) { return; }
+
+		// Use FScopedTypedValue for safe working buffers
+		PCGExTypes::FScopedTypedValue ValA(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValB(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValC(UnderlyingType);
+
+		PCGEX_SCOPE_LOOP(Index)
+		{
+			if (!Mask[Index - Scope.Start]) { continue; }
+
+			A->GetVoid(Index, ValA.GetRaw());
+			B->GetVoid(Index, ValB.GetRaw());
+
+			Operation->Blend(ValA.GetRaw(), ValB.GetRaw(), Weight, ValC.GetRaw());
+			C->SetVoid(Index, ValC.GetRaw());
+		}
+	}
+
+	void FProxyDataBlender::BlendScope(const PCGExMT::FScope& Scope, TArrayView<const int8> Mask, TArrayView<const double> Weights) const
+	{
+		if (!Operation || !A || !C) { return; }
+
+		// Use FScopedTypedValue for safe working buffers
+		PCGExTypes::FScopedTypedValue ValA(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValB(UnderlyingType);
+		PCGExTypes::FScopedTypedValue ValC(UnderlyingType);
+
+		PCGEX_SCOPE_LOOP(Index)
+		{
+			const int32 i = Index - Scope.Start;
+			if (!Mask[i]) { continue; }
+
+			A->GetVoid(Index, ValA.GetRaw());
+			B->GetVoid(Index, ValB.GetRaw());
+
+			Operation->Blend(ValA.GetRaw(), ValB.GetRaw(), Weights[i], ValC.GetRaw());
+			C->SetVoid(Index, ValC.GetRaw());
+		}
 	}
 
 	PCGEx::FOpStats FProxyDataBlender::BeginMultiBlend(const int32 TargetIndex)
 	{
 		PCGEx::FOpStats Tracker{};
 
-		if (!Operation || !C) { return Tracker; }
+		check(Operation)
+		check(C)
 
 		PCGExTypes::FScopedTypedValue Current(UnderlyingType);
 		C->GetVoid(TargetIndex, Current.GetRaw());
@@ -86,7 +153,10 @@ namespace PCGExBlending
 
 	void FProxyDataBlender::MultiBlend(const int32 SourceIndex, const int32 TargetIndex, const double Weight, PCGEx::FOpStats& Tracker)
 	{
-		if (!Operation || !A || !C) { return; }
+		check(Operation)
+		check(A)
+		check(B)
+		check(C)
 
 		PCGExTypes::FScopedTypedValue Source(UnderlyingType);
 
@@ -96,22 +166,15 @@ namespace PCGExBlending
 		if (Tracker.Count < 0)
 		{
 			Tracker.Count = 0;
-
-			// Copy source to current
-			C->SetVoid(TargetIndex, Source.GetRaw());
+			C->SetVoid(TargetIndex, Source.GetRaw()); // Copy source to current
 		}
 		else
 		{
 			PCGExTypes::FScopedTypedValue Current(UnderlyingType);
 
-			// Read current accumulated value
-			C->GetCurrentVoid(TargetIndex, Current.GetRaw());
-
-			// Accumulate
-			Operation->Accumulate(Source.GetRaw(), Current.GetRaw(), Weight);
-
-			// Write back
-			C->SetVoid(TargetIndex, Current.GetRaw());
+			C->GetCurrentVoid(TargetIndex, Current.GetRaw());                 // Read current accumulated value			
+			Operation->Accumulate(Source.GetRaw(), Current.GetRaw(), Weight); // Accumulate			
+			C->SetVoid(TargetIndex, Current.GetRaw());                        // Write back
 		}
 
 		Tracker.Count++;
@@ -120,18 +183,17 @@ namespace PCGExBlending
 
 	void FProxyDataBlender::EndMultiBlend(const int32 TargetIndex, PCGEx::FOpStats& Tracker)
 	{
-		if (!Operation || !C || Tracker.Count == 0) { return; }
+		check(Operation)
+		check(C)
+
+		if (!Tracker.Count) { return; }
 
 		PCGExTypes::FScopedTypedValue Current(UnderlyingType);
 
-		// Read accumulated value
-		C->GetCurrentVoid(TargetIndex, Current.GetRaw());
 
-		// Finalize (e.g., divide by count for average)
-		Operation->EndMulti(Current.GetRaw(), Tracker.TotalWeight, Tracker.Count);
-
-		// Write final result
-		C->SetVoid(TargetIndex, Current.GetRaw());
+		C->GetCurrentVoid(TargetIndex, Current.GetRaw());                          // Read accumulated value		
+		Operation->EndMulti(Current.GetRaw(), Tracker.TotalWeight, Tracker.Count); // Finalize (e.g., divide by count for average)		
+		C->SetVoid(TargetIndex, Current.GetRaw());                                 // Write final result
 	}
 
 	void FProxyDataBlender::Div(const int32 TargetIndex, const double Divider)
@@ -140,14 +202,9 @@ namespace PCGExBlending
 
 		PCGExTypes::FScopedTypedValue Value(UnderlyingType);
 
-		// Read current value
-		C->GetVoid(TargetIndex, Value.GetRaw());
-
-		// Divide
-		Operation->Div(Value.GetRaw(), Divider);
-
-		// Write back
-		C->SetVoid(TargetIndex, Value.GetRaw());
+		C->GetVoid(TargetIndex, Value.GetRaw()); // Read current value
+		Operation->Div(Value.GetRaw(), Divider); // Divide
+		C->SetVoid(TargetIndex, Value.GetRaw()); // Write back
 	}
 
 	TSharedPtr<PCGExData::IBuffer> FProxyDataBlender::GetOutputBuffer() const
@@ -161,7 +218,7 @@ namespace PCGExBlending
 		const TSharedPtr<PCGExData::FFacade> InTargetFacade,
 		const TSharedPtr<PCGExData::FFacade> InSourceFacade,
 		const PCGExData::EIOSide InSide,
-		const bool bWantsDirectAccess)
+		const PCGExData::EProxyFlags InProxyFlags)
 	{
 		// Setup proxy descriptors
 		PCGExData::FProxyDescriptor Desc_A = PCGExData::FProxyDescriptor(InSourceFacade, PCGExData::EProxyRole::Read);
@@ -189,9 +246,9 @@ namespace PCGExBlending
 		Desc_C.Side = PCGExData::EIOSide::Out;
 		Desc_C.Role = PCGExData::EProxyRole::Write;
 
-		Desc_A.bWantsDirect = bWantsDirectAccess;
-		Desc_B.bWantsDirect = bWantsDirectAccess;
-		Desc_C.bWantsDirect = bWantsDirectAccess;
+		Desc_A.AddFlags(InProxyFlags);
+		Desc_B.AddFlags(InProxyFlags);
+		Desc_C.AddFlags(InProxyFlags);
 
 		// Set type info
 		UnderlyingType = Desc_A.WorkingType;
@@ -224,10 +281,7 @@ namespace PCGExBlending
 		Blender->UnderlyingType = WorkingType;
 		Blender->Operation = FBlendOperationFactory::Create(WorkingType, BlendMode, bResetValueForMultiBlend);
 
-		if (!Blender->Operation)
-		{
-			return nullptr;
-		}
+		if (!Blender->Operation) { return nullptr; }
 
 		return Blender;
 	}
@@ -321,7 +375,7 @@ namespace PCGExBlending
 		// Create output first so we may read from it
 		Blender->C = PCGExData::GetProxyBuffer(InContext, C);
 		Blender->A = PCGExData::GetProxyBuffer(InContext, A);
-		Blender->B = nullptr; // No B buffer - blend will use A or C as needed
+		Blender->B = Blender->A; // Use B as fallback -- important for intrinsic properties such as $Index
 
 		if (!Blender->A)
 		{
