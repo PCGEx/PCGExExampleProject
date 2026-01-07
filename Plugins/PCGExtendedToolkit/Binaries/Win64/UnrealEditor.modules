@@ -1,0 +1,35 @@
+{
+	"BuildId": "43139311",
+	"Modules": 
+	{
+		"PCGExBlending": "UnrealEditor-PCGExBlending.dll",
+		"PCGExCollections": "UnrealEditor-PCGExCollections.dll",
+		"PCGExCollectionsEditor": "UnrealEditor-PCGExCollectionsEditor.dll",
+		"PCGExCore": "UnrealEditor-PCGExCore.dll",
+		"PCGExCoreEditor": "UnrealEditor-PCGExCoreEditor.dll",
+		"PCGExElementsActions": "UnrealEditor-PCGExElementsActions.dll",
+		"PCGExElementsBridges": "UnrealEditor-PCGExElementsBridges.dll",
+		"PCGExElementsClipper2": "UnrealEditor-PCGExElementsClipper2.dll",
+		"PCGExElementsClusters": "UnrealEditor-PCGExElementsClusters.dll",
+		"PCGExElementsMeta": "UnrealEditor-PCGExElementsMeta.dll",
+		"PCGExElementsPathfinding": "UnrealEditor-PCGExElementsPathfinding.dll",
+		"PCGExElementsPathfindingNavmesh": "UnrealEditor-PCGExElementsPathfindingNavmesh.dll",
+		"PCGExElementsPaths": "UnrealEditor-PCGExElementsPaths.dll",
+		"PCGExElementsProbing": "UnrealEditor-PCGExElementsProbing.dll",
+		"PCGExElementsSampling": "UnrealEditor-PCGExElementsSampling.dll",
+		"PCGExElementsShapes": "UnrealEditor-PCGExElementsShapes.dll",
+		"PCGExElementsSpatial": "UnrealEditor-PCGExElementsSpatial.dll",
+		"PCGExElementsTensors": "UnrealEditor-PCGExElementsTensors.dll",
+		"PCGExElementsTopology": "UnrealEditor-PCGExElementsTopology.dll",
+		"PCGExFilters": "UnrealEditor-PCGExFilters.dll",
+		"PCGExFoundations": "UnrealEditor-PCGExFoundations.dll",
+		"PCGExFoundationsEditor": "UnrealEditor-PCGExFoundationsEditor.dll",
+		"PCGExGraphs": "UnrealEditor-PCGExGraphs.dll",
+		"PCGExHeuristics": "UnrealEditor-PCGExHeuristics.dll",
+		"PCGExMatching": "UnrealEditor-PCGExMatching.dll",
+		"PCGExNoise3D": "UnrealEditor-PCGExNoise3D.dll",
+		"PCGExPickers": "UnrealEditor-PCGExPickers.dll",
+		"PCGExtendedToolkit": "UnrealEditor-PCGExtendedToolkit.dll",
+		"PCGExtendedToolkitEditor": "UnrealEditor-PCGExtendedToolkitEditor.dll"
+	}
+}
