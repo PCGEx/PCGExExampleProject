@@ -3,7 +3,7 @@
 
 #include "PCGExtendedToolkit.h"
 #include "PCGExVersion.h"
-#include "Generated/PCGExSubModules.generated.h"
+#include "PCGExSubModules.generated.h"
 
 #if WITH_EDITOR
 #include "PCGExCoreSettingsCache.h"
@@ -16,9 +16,12 @@
 
 void FPCGExtendedToolkitModule::StartupModule()
 {
-	
 	FModuleManager::Get().LoadModuleChecked<IModuleInterface>("PCG");
-	
+
+	// Load default asset labels
+	FSoftObjectPath LabelPath(TEXT("/PCGExtendedToolkit/PL_PCGExDefaultAssets.PL_PCGExDefaultAssets"));
+	if (UObject* Label = LabelPath.TryLoad(); !Label) { UE_LOG(LogTemp, Error, TEXT("Failed to load PCGEx primary asset label")); }
+
 	const TMap<FString, TArray<FString>>& Dependencies = PCGExSubModules::GetModuleDependencies();
 	TSet<FString> Loaded;
 
@@ -46,7 +49,7 @@ void FPCGExtendedToolkitModule::StartupModule()
 	{
 		LoadWithDeps(ModuleName);
 	}
-	
+
 	GetDefault<UPCGExGlobalSettings>()->UpdateSettingsCaches();
 
 #pragma region Push Pins
@@ -57,9 +60,9 @@ void FPCGExtendedToolkitModule::StartupModule()
 
 #pragma region OUT
 
-#if PCGEX_ENGINE_VERSION < 506
+#if PCGEX_ENGINE_VERSION < 507
 	// Register pins as extra icons on 5.6
-	
+
 	// Out pin map
 	PCGEX_EMPLACE_PIN_OUT(OUT_Filter, "PCGEx Filter");
 	PCGEX_MAP_PIN_OUT("Filter")
@@ -81,7 +84,7 @@ void FPCGExtendedToolkitModule::StartupModule()
 
 	PCGEX_EMPLACE_PIN_OUT(OUT_Probe, "PCGEx Probe");
 	PCGEX_MAP_PIN_OUT("Probe")
-	
+
 	PCGEX_EMPLACE_PIN_OUT(OUT_Noise3D, "PCGEx Noise");
 	PCGEX_MAP_PIN_OUT("Noise")
 
@@ -126,9 +129,9 @@ void FPCGExtendedToolkitModule::StartupModule()
 	PCGEX_EMPLACE_PIN_OUT(OUT_Edges, "Point collection formatted for use as cluster edges.");
 	PCGEX_MAP_PIN_OUT("Edges")
 	PCGEX_MAP_PIN_OUT("Unmatched Edges")
-	
+
 #else
-	
+
 	PCGEX_EMPLACE_PIN_OUT(OUT_Vtx, "Point collection formatted for use as cluster vtx.");
 	PCGEX_MAP_PIN_OUT("Vtx")
 	PCGEX_MAP_PIN_OUT("Unmatched Vtx")
@@ -136,16 +139,16 @@ void FPCGExtendedToolkitModule::StartupModule()
 	PCGEX_EMPLACE_PIN_OUT(OUT_Edges, "Point collection formatted for use as cluster edges.");
 	PCGEX_MAP_PIN_OUT("Edges")
 	PCGEX_MAP_PIN_OUT("Unmatched Edges")
-	
+
 #endif
 
 #pragma endregion
 
 #pragma region IN
 
-#if PCGEX_ENGINE_VERSION < 506
+#if PCGEX_ENGINE_VERSION < 507
 	// Register pins as extra icons on 5.6
-	
+
 	// In pin map
 	PCGEX_EMPLACE_PIN_IN(IN_Filter, "Expects PCGEx Filters, supports multiple inputs.");
 	PCGEX_MAP_PIN_IN("Filters")
@@ -173,7 +176,7 @@ void FPCGExtendedToolkitModule::StartupModule()
 	for (int f = 0; f < 42; f++)
 	{
 		FString SI = FString::Printf(TEXT("%d"), f + 0);
-		InPinInfosMap.Add(FName(TEXT("→ ") + SI), PinIndex);
+		PCGEX_CORE_SETTINGS.OutPinInfosMap.Add(FName(TEXT("→ ") + SI), PinIndex);
 	}
 
 	PCGEX_EMPLACE_PIN_IN(IN_FilterEdge, "Expects PCGEx Filers or Edge Filters, supports multiple inputs.");
@@ -228,7 +231,7 @@ void FPCGExtendedToolkitModule::StartupModule()
 
 	PCGEX_EMPLACE_PIN_IN(IN_FillControl, "PCGEx Fill Controls, supports multiple inputs.");
 	PCGEX_MAP_PIN_IN("Fill Controls")
-	
+
 	PCGEX_EMPLACE_PIN_IN(IN_Noise3D, "PCGEx Noises, supports multiple inputs.");
 	PCGEX_MAP_PIN_IN("Noises")
 	PCGEX_MAP_PIN_IN("Masks")
@@ -255,15 +258,15 @@ void FPCGExtendedToolkitModule::StartupModule()
 	PCGEX_MAP_PIN_IN("Overrides : Orient")
 	PCGEX_MAP_PIN_IN("Overrides : Smoothing")
 	PCGEX_MAP_PIN_IN("Overrides : Packer")
-	
+
 #else
-	
+
 	PCGEX_EMPLACE_PIN_IN(IN_Vtx, "Point collection formatted for use as cluster vtx.");
 	PCGEX_MAP_PIN_IN("Vtx")
 
 	PCGEX_EMPLACE_PIN_IN(IN_Edges, "Point collection formatted for use as cluster edges.");
 	PCGEX_MAP_PIN_IN("Edges")
-	
+
 #endif
 
 	PCGEX_EMPLACE_PIN_IN(IN_Special, "Attribute set whose values will be used to override a specific internal module.");

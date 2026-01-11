@@ -390,7 +390,7 @@ void FPCGExClipper2ProcessorContext::OutputPaths64(
 		OutputFacade = MakeShared<PCGExData::FFacade>(NewPointIO.ToSharedRef());
 
 		Blender = MakeShared<PCGExBlending::FUnionBlender>(&BlendingDetails, &CarryOverDetails, PCGExMath::GetDistances());
-		Blender->AddSources(BlendSources, nullptr, [](const TSharedPtr<PCGExData::FFacade>& InFacade) { return InFacade->Idx; });
+		Blender->AddSources(BlendSources, nullptr, [](const TSharedRef<PCGExData::FFacade>& InFacade) { return InFacade->Idx; });
 		UnionMetadata = MakeShared<PCGExData::FUnionMetadata>();
 		UnionMetadata->SetNum(NumPoints);
 
@@ -752,11 +752,17 @@ bool FPCGExClipper2ProcessorElement::AdvanceWork(FPCGExContext* InContext, const
 
 	PCGEX_ON_ASYNC_STATE_READY(PCGExCommon::States::State_Processing)
 	{
-		PCGEX_OUTPUT_VALID_PATHS(MainPoints)
+		OutputWork(Context, Settings);
 		Context->Done();
 	}
 
 	return Context->TryComplete();
+}
+
+void FPCGExClipper2ProcessorElement::OutputWork(FPCGExContext* InContext, const UPCGExSettings* InSettings) const
+{
+	PCGEX_CONTEXT_AND_SETTINGS(Clipper2Processor)
+	PCGEX_OUTPUT_VALID_PATHS(MainPoints)
 }
 
 int32 FPCGExClipper2ProcessorElement::BuildDataFromCollection(
