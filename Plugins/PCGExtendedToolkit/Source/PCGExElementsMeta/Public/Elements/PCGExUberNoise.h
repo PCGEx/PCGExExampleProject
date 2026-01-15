@@ -57,7 +57,7 @@ public:
 #endif
 
 	PCGEX_NODE_POINT_FILTER(PCGExFilters::Labels::SourceFiltersLabel, "Filters", PCGExFactories::PointFilters, false)
-	
+
 protected:
 	virtual FPCGElementPtr CreateElement() const override;
 	virtual TArray<FPCGPinProperties> InputPinProperties() const override;
@@ -73,11 +73,11 @@ public:
 	EPCGMetadataTypes OutputType = EPCGMetadataTypes::Double;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable, ShowOnlyInnerProperties))
-	FPCGExAttributeSourceToTargetDetails Attributes;
+	FPCGExAttributeSourceToTargetDetails Attributes = FPCGExAttributeSourceToTargetDetails(FName(TEXT("$Density")));
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_NotOverridable, EditCondition="Mode == EPCGExUberNoiseMode::Mutate", EditConditionHides))
 	EPCGExABBlendingType BlendMode = EPCGExABBlendingType::Add;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable, EditCondition="Mode == EPCGExUberNoiseMode::Mutate", EditConditionHides))
 	FPCGExInputShorthandSelectorDouble SourceValueWeight = FPCGExInputShorthandSelectorDouble(FName("Weight"), 1, false);
 
@@ -94,7 +94,7 @@ struct FPCGExUberNoiseContext final : FPCGExPointsProcessorContext
 	friend class FPCGExUberNoiseElement;
 
 	TSharedPtr<PCGExNoise3D::FNoiseGenerator> NoiseGenerator;
-	
+
 protected:
 	PCGEX_ELEMENT_BATCH_POINT_DECL
 };
