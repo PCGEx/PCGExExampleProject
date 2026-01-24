@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -7,11 +7,12 @@
 #include "Containers/PCGExScopedContainers.h"
 #include "Data/Utils/PCGExDataFilterDetails.h"
 #include "Clusters/PCGExEdge.h"
+#include "Clusters/Artifacts/PCGExCellDetails.h"
+#include "Clusters/Artifacts/PCGExPlanarFaceEnumerator.h"
 #include "Math/PCGExProjectionDetails.h"
 #include "Math/PCGExWinding.h"
 
 class UPCGBasePointData;
-enum class EPCGExPointPropertyOutput : uint8;
 struct FPCGExCellConstraintsDetails;
 
 namespace PCGExData
@@ -64,25 +65,44 @@ namespace PCGExClusters
 	};
 
 	class FCell;
+	class FCellConstraints;
+	struct FNode;
 
-	class PCGEXCORE_API FHoles : public TSharedFromThis<FHoles>
+	/**
+	 * Unified point set for Seeds/Holes - projects points to 2D and provides AABB-optimized overlap checks.
+	 * Thread-safe lazy projection with coarse AABB culling before fine polygon checks.
+	 */
+	class PCGEXCORE_API FProjectedPointSet : public TSharedFromThis<FProjectedPointSet>
 	{
-		// TODO : Need to use per-processor hole instance to match best fit projection
 	protected:
 		mutable FRWLock ProjectionLock;
 
 		TSharedRef<PCGExData::FFacade> PointDataFacade;
 		FPCGExGeo2DProjectionDetails ProjectionDetails;
 		TArray<FVector2D> ProjectedPoints;
+		FBox2D TightBounds;
 
 	public:
-		explicit FHoles(FPCGExContext* InContext, const TSharedRef<PCGExData::FFacade>& InPointDataFacade, const FPCGExGeo2DProjectionDetails& InProjectionDetails)
-			: PointDataFacade(InPointDataFacade), ProjectionDetails(InProjectionDetails)
+		explicit FProjectedPointSet(FPCGExContext* InContext, const TSharedRef<PCGExData::FFacade>& InPointDataFacade, const FPCGExGeo2DProjectionDetails& InProjectionDetails)
+			: PointDataFacade(InPointDataFacade), ProjectionDetails(InProjectionDetails), TightBounds(ForceInit)
 		{
 			if (ProjectionDetails.Method == EPCGExProjectionMethod::Normal) { ProjectionDetails.Init(PointDataFacade); }
 		}
 
-		bool Overlaps(const TArray<FVector2D>& Polygon);
+		/** Lazy project all points + compute tight AABB (thread-safe) */
+		void EnsureProjected();
+
+		/** Check if any point overlaps polygon (with AABB early-out) */
+		bool OverlapsPolygon(const TArray<FVector2D>& Polygon, const FBox2D& PolygonBounds) const;
+
+		/** Get projected point by index (for FindCells seed tracking). Caller must call EnsureProjected() before using in loops. */
+		FORCEINLINE const FVector2D& GetProjected(int32 Index) const
+		{
+			return ProjectedPoints[Index];
+		}
+
+		int32 Num() const;
+		FORCEINLINE const FBox2D& GetBounds() const { return TightBounds; }
 	};
 
 	class PCGEXCORE_API FCellConstraints : public TSharedFromThis<FCellConstraints>
@@ -121,7 +141,8 @@ namespace PCGExClusters
 		bool bBuildWrapper = true;
 
 		TSharedPtr<FCell> WrapperCell;
-		TSharedPtr<FHoles> Holes;
+		TSharedPtr<FProjectedPointSet> Holes;
+		TSharedPtr<FPlanarFaceEnumerator> Enumerator;
 
 		FCellConstraints()
 		{
@@ -133,7 +154,15 @@ namespace PCGExClusters
 		bool ContainsSignedEdgeHash(const uint64 Hash);
 		bool IsUniqueStartHalfEdge(const uint64 Hash);
 		bool IsUniqueCellHash(const TSharedPtr<FCell>& InCell);
-		void BuildWrapperCell(const TSharedRef<FCluster>& InCluster, const TArray<FVector2D>& ProjectedPositions, const TSharedPtr<FCellConstraints>& InConstraints = nullptr);
+
+		/** Build or get the shared enumerator. Call this once to build the DCEL, then reuse. */
+		TSharedPtr<FPlanarFaceEnumerator> GetOrBuildEnumerator(const TSharedRef<FCluster>& InCluster, const TArray<FVector2D>& ProjectedPositions);
+
+		/** Build wrapper cell using the shared enumerator */
+		void BuildWrapperCell(const TSharedPtr<FCellConstraints>& InConstraints = nullptr);
+
+		/** Legacy method - builds enumerator internally if needed */
+		void BuildWrapperCell(const TSharedRef<FCluster>& InCluster, const TArray<FVector2D>& ProjectedPositions);
 
 		void Cleanup();
 	};
@@ -161,6 +190,7 @@ namespace PCGExClusters
 		uint64 CellHash = 0;
 
 	public:
+		FBox2D Bounds2D;
 		TArray<int32> Nodes;
 		TSharedRef<FCellConstraints> Constraints;
 
@@ -170,7 +200,7 @@ namespace PCGExClusters
 
 		bool bBuiltSuccessfully = false;
 
-		TArray<FVector2D> Polygon; // TODO : Make this a TArray<FVector2D> instead 
+		TArray<FVector2D> Polygon;
 
 		int32 CustomIndex = -1;
 
@@ -183,13 +213,6 @@ namespace PCGExClusters
 		~FCell() = default;
 
 		uint64 GetCellHash();
-
-		ECellResult BuildFromCluster(const PCGExGraphs::FLink InSeedLink, TSharedRef<FCluster> InCluster, const TArray<FVector2D>& ProjectedPositions);
-
-		ECellResult BuildFromCluster(const FVector& SeedPosition, const TSharedRef<FCluster>& InCluster, const TArray<FVector2D>& ProjectedPositions, const FVector& UpVector = FVector::UpVector, const FPCGExNodeSelectionDetails* Picking = nullptr);
-
-		ECellResult BuildFromPath(const TArray<FVector2D>& ProjectedPositions);
-
 		void PostProcessPoints(UPCGBasePointData* InMutablePoints);
 	};
 

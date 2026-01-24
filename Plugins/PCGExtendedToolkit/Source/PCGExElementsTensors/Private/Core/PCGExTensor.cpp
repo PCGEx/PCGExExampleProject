@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Core/PCGExTensor.h"
@@ -10,7 +10,6 @@
 #include "Helpers/PCGExStreamingHelpers.h"
 #include "Math/PCGExMathAxis.h"
 #include "Math/PCGExMathBounds.h"
-#include "Async/ParallelFor.h"
 
 PCGExTensor::FTensorSample FPCGExTensorSamplingMutationsDetails::Mutate(const FTransform& InProbe, PCGExTensor::FTensorSample InSample) const
 {

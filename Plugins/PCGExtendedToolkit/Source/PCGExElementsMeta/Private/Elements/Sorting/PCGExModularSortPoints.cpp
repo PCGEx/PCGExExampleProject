@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 
@@ -12,6 +12,11 @@ TArray<FPCGPinProperties> UPCGExModularSortPointsSettings::InputPinProperties() 
 	TArray<FPCGPinProperties> PinProperties = Super::InputPinProperties();
 	PCGExSorting::DeclareSortingRulesInputs(PinProperties, EPCGPinStatus::Required);
 	return PinProperties;
+}
+
+EPCGExExecutionPolicy UPCGExModularSortPointsSettings::GetExecutionPolicy() const
+{
+	return EPCGExExecutionPolicy::NoPause;
 }
 
 bool UPCGExModularSortPointsSettings::GetSortingRules(FPCGExContext* InContext, TArray<FPCGExSortRuleConfig>& OutRules) const

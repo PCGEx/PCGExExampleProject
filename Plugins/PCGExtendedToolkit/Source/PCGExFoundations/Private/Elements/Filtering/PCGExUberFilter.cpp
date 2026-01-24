@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 
@@ -66,6 +66,16 @@ TArray<FPCGPinProperties> UPCGExUberFilterSettings::OutputPinProperties() const
 
 PCGEX_INITIALIZE_ELEMENT(UberFilter)
 PCGEX_ELEMENT_BATCH_POINT_IMPL(UberFilter)
+
+PCGExData::EIOInit UPCGExUberFilterSettings::GetMainDataInitializationPolicy() const
+{
+	return
+		Mode == EPCGExUberFilterMode::Write
+			? StealData == EPCGExOptionState::Enabled
+				  ? PCGExData::EIOInit::Forward
+				  : PCGExData::EIOInit::Duplicate
+			: PCGExData::EIOInit::NoInit;
+}
 
 FName UPCGExUberFilterSettings::GetMainOutputPin() const
 {
@@ -156,7 +166,7 @@ namespace PCGExUberFilter
 
 		if (!IProcessor::Process(InTaskManager)) { return false; }
 
-		PCGEX_INIT_IO(PointDataFacade->Source, Settings->Mode == EPCGExUberFilterMode::Write ? PCGExData::EIOInit::Duplicate : PCGExData::EIOInit::NoInit)
+		PCGEX_INIT_IO(PointDataFacade->Source, Settings->GetMainDataInitializationPolicy())
 
 		bUsePicks = PCGExPickers::GetPicks(Context->PickerFactories, PointDataFacade, Picks);
 

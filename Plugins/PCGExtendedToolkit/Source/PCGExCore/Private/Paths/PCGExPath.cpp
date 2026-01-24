@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Paths/PCGExPath.h"
@@ -283,7 +283,7 @@ namespace PCGExPaths
 
 		for (int i = 0; i < NumPoints; i++)
 		{
-			const FVector2D ProjectedPoint = FVector2D(Projection.ProjectFlat(GetPos_Unsafe(i), i));
+			const FVector2D ProjectedPoint = FVector2D(Projection.ProjectFlat(GetPos_Unsafe(i)));
 			ProjectedBounds += ProjectedPoint;
 			ProjectedPoints[i] = ProjectedPoint;
 		}

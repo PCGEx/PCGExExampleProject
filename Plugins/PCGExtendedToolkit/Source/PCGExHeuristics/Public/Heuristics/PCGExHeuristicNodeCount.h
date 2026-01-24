@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -25,6 +25,8 @@ struct FPCGExHeuristicConfigLeastNodes : public FPCGExHeuristicConfigBase
 class FPCGExHeuristicNodeCount : public FPCGExHeuristicDistance
 {
 public:
+	virtual EPCGExHeuristicCategory GetCategory() const override { return EPCGExHeuristicCategory::FullyStatic; }
+
 	virtual double GetGlobalScore(const PCGExClusters::FNode& From, const PCGExClusters::FNode& Seed, const PCGExClusters::FNode& Goal) const override;
 
 	virtual double GetEdgeScore(const PCGExClusters::FNode& From, const PCGExClusters::FNode& To, const PCGExGraphs::FEdge& Edge, const PCGExClusters::FNode& Seed, const PCGExClusters::FNode& Goal, const TSharedPtr<PCGEx::FHashLookup> TravelStack = nullptr) const override;

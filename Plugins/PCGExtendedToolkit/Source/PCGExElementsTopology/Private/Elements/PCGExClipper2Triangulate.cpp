@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/PCGExClipper2Triangulate.h"
@@ -92,8 +92,7 @@ void FPCGExClipper2TriangulateContext::BuildVertexPoolFromGroup(const TSharedPtr
 					FVector(
 						static_cast<double>(Pt.x) * InvScale,
 						static_cast<double>(Pt.y) * InvScale,
-						0.0),
-					0);
+						0.0));
 				Vertex.Color = FVector4(1, 1, 1, 1);
 			}
 

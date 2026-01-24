@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -57,6 +57,15 @@ struct PCGEXCORE_API FPCGExScaleToFitDetails
 	EPCGExScaleToFit ScaleToFitZ = EPCGExScaleToFit::None;
 
 	void Process(const PCGExData::FPoint& InPoint, const FBox& InBounds, FVector& OutScale, FBox& OutBounds) const;
+
+	bool IsEnabled() const
+	{
+		if (ScaleToFitMode == EPCGExFitMode::None) { return false; }
+		if (ScaleToFitMode == EPCGExFitMode::Uniform) { return ScaleToFit != EPCGExScaleToFit::None; }
+		return !(ScaleToFitX == EPCGExScaleToFit::None
+			&& ScaleToFitY == EPCGExScaleToFit::None
+			&& ScaleToFitZ == EPCGExScaleToFit::None);
+	}
 
 private:
 	static void ScaleToFitAxis(const EPCGExScaleToFit Fit, const int32 Axis, const FVector& TargetScale, const FVector& TargetSize, const FVector& CandidateSize, const FVector& MinMaxFit, FVector& OutScale);
@@ -117,7 +126,10 @@ struct PCGEXCORE_API FPCGExJustificationDetails
 {
 	GENERATED_BODY()
 
-	FPCGExJustificationDetails()
+	FPCGExJustificationDetails() = default;
+
+	explicit FPCGExJustificationDetails(const bool bInEnabled)
+		: bDoJustifyX(bInEnabled), bDoJustifyY(bInEnabled), bDoJustifyZ(bInEnabled)
 	{
 	}
 
@@ -211,8 +223,8 @@ struct PCGEXCORE_API FPCGExFittingDetailsHandler
 
 	bool Init(FPCGExContext* InContext, const TSharedRef<PCGExData::FFacade>& InTargetFacade);
 
-	void ComputeTransform(const int32 TargetIndex, FTransform& OutTransform, FBox& InOutBounds, const bool bWorldSpace = true) const;
-	void ComputeLocalTransform(const int32 TargetIndex, const FTransform& InLocalXForm, FTransform& OutTransform, FBox& InOutBounds) const;
+	void ComputeTransform(const int32 TargetIndex, FTransform& OutTransform, FBox& InOutBounds, FVector& OutTranslation, const bool bWorldSpace = true) const;
+	void ComputeLocalTransform(const int32 TargetIndex, const FTransform& InLocalXForm, FTransform& OutTransform, FBox& InOutBounds, FVector& OutTranslation) const;
 
 	bool WillChangeBounds() const;
 	bool WillChangeTransform() const;

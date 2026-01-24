@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -60,6 +60,19 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override { return FLinearColor::White; }
 
 	TMap<FName, PCGExAssetCollectionEditor::FilterInfos> FilterInfos;
+
+	/**
+	 * Visibility check for properties under "Entries" array.
+	 * Checks if property IS "Entries" or has "Entries" as an ancestor.
+	 * Also allows properties from PropertyOverrides system (detects via struct inheritance from FPCGExPropertyCompiled).
+	 *
+	 * This supports full extensibility - custom property types just need to derive from FPCGExPropertyCompiled.
+	 *
+	 * Performance note: Parent chain depth is constant regardless of entry count.
+	 * With 100s of entries, parent chain is still ~4-6 properties deep (e.g., Entries > Entry[0] > PropertyOverrides > Overrides > Value).
+	 * Iterator is cheap - O(depth) where depth is constant, not O(entries).
+	 */
+	static bool IsPropertyUnderEntries(const FPropertyAndParent& PropertyAndParent);
 
 protected:
 	TWeakObjectPtr<UPCGExAssetCollection> EditedCollection;

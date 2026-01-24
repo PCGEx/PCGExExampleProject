@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -22,10 +22,14 @@ public:
 #endif
 
 protected:
+	virtual bool SupportsDataStealing() const override { return true; }
 	virtual FPCGElementPtr CreateElement() const override;
 	//~End UPCGSettings
 
 public:
+	
+	virtual PCGExData::EIOInit GetMainDataInitializationPolicy() const override;
+	
 	/** List of attributes to delete. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta=(PCG_Overridable, ShowOnlyInnerProperties))
 	FPCGExCarryOverDetails Filters;

@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -91,7 +91,7 @@ struct PCGEXELEMENTSTOPOLOGY_API FPCGExTopologyClustersProcessorContext : FPCGEx
 	friend class FPCGExTopologyClustersProcessorElement;
 	TArray<TObjectPtr<const UPCGExPointFilterFactoryData>> EdgeConstraintsFilterFactories;
 
-	TSharedPtr<PCGExClusters::FHoles> Holes;
+	TSharedPtr<PCGExClusters::FProjectedPointSet> Holes;
 	TSharedPtr<PCGExData::FFacade> HolesFacade;
 	TArray<TSharedPtr<TMap<uint64, int32>>> HashMaps;
 
@@ -116,7 +116,7 @@ namespace PCGExTopologyEdges
 		friend class IBatch;
 
 	protected:
-		TSharedPtr<PCGExClusters::FHoles> Holes;
+		TSharedPtr<PCGExClusters::FProjectedPointSet> Holes;
 		FPCGExTopologyUVDetails UVDetails;
 
 		const FVector2D CWTolerance = FVector2D(0.001);

@@ -279,6 +279,29 @@
 			]
 		},
 		{
+			"Name": "PCGExElementsValency",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux",
+				"LinuxArm64"
+			]
+		},
+		{
+			"Name": "PCGExElementsValencyEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
+		},
+		{
 			"Name": "PCGExFilters",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
@@ -378,6 +401,29 @@
 				"Linux",
 				"LinuxArm64"
 			]
+		},
+		{
+			"Name": "PCGExProperties",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux",
+				"LinuxArm64"
+			]
+		},
+		{
+			"Name": "PCGExPropertiesEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
 		}
 	],
 	"Plugins": [
@@ -391,6 +437,10 @@
 		},
 		{
 			"Name": "PCGGeometryScriptInterop",
+			"Enabled": true
+		},
+		{
+			"Name": "StructUtils",
 			"Enabled": true
 		}
 	]

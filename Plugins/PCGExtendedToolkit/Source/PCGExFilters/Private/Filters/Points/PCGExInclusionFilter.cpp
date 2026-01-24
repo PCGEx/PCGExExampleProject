@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Filters/Points/PCGExInclusionFilter.h"
@@ -41,6 +41,18 @@ void UPCGExInclusionFilterFactory::InitConfig_Internal()
 	bScaleTolerance = Config.bSplineScalesTolerance;
 	bIgnoreSelf = Config.bIgnoreSelf;
 }
+
+#if WITH_EDITOR
+void UPCGExInclusionFilterProviderSettings::ApplyDeprecation(UPCGNode* InOutNode)
+{
+	PCGEX_UPDATE_TO_DATA_VERSION(1, 73, 4)
+	{
+		Config.ProjectionDetails.ApplyDeprecation();
+	}
+	
+	Super::ApplyDeprecation(InOutNode);
+}
+#endif
 
 namespace PCGExPointFilter
 {

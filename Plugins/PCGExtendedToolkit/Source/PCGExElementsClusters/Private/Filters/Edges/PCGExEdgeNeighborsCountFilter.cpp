@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Filters/Edges/PCGExEdgeNeighborsCountFilter.h"
@@ -80,7 +80,7 @@ PCGEX_CREATE_FILTER_FACTORY(EdgeNeighborsCount)
 #if WITH_EDITOR
 FString UPCGExEdgeNeighborsCountFilterProviderSettings::GetDisplayName() const
 {
-	FString DisplayName = "Neighbors Count (";
+	FString DisplayName = "Num Neighbors (";
 
 	switch (Config.Mode)
 	{

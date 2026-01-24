@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Tensors/PCGExTensorInertia.h"
@@ -50,7 +50,7 @@ PCGExTensor::FTensorSample FPCGExTensorInertia::Sample(const int32 InSeedIndex, 
 	}
 
 
-	return Samples.Flatten(Config.TensorWeight);
+	return Config.Mutations.Mutate(InProbe, Samples.Flatten(Config.TensorWeight));
 }
 
 PCGEX_TENSOR_BOILERPLATE(Inertia, {}, {})

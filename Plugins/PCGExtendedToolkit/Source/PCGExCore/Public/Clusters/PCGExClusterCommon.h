@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -60,6 +60,12 @@ struct PCGEXCORE_API FPCGExNodeSelectionDetails
 	{
 		if (MaxDistance <= 0) { return true; }
 		return FVector::Distance(NodePosition, TargetPosition) < MaxDistance;
+	}
+
+	FORCEINLINE bool WithinDistanceSquared(const double SqDist) const
+	{
+		if (MaxDistance <= 0) { return true; }
+		return SqDist < FMath::Square(MaxDistance);
 	}
 };
 

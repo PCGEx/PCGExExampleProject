@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Graphs/PCGExGraphBuilder.h"
@@ -14,7 +14,6 @@
 #include "Clusters/PCGExClusterCommon.h"
 #include "Graphs/PCGExSubGraph.h"
 #include "Sorting/PCGExSortingHelpers.h"
-#include "Async/ParallelFor.h"
 
 namespace PCGExGraphTask
 {

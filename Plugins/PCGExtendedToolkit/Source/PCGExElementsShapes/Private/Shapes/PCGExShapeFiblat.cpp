@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Shapes/PCGExShapeFiblat.h"
@@ -7,7 +7,6 @@
 #include "Data/PCGExData.h"
 #include "Details/PCGExSettingsDetails.h"
 #include "Paths/PCGExPath.h"
-#include "Async/ParallelFor.h"
 #include "Containers/PCGExManagedObjects.h"
 
 #define LOCTEXT_NAMESPACE "PCGExCreateBuilderFiblat"

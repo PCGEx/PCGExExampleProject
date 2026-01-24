@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/PCGExPathfindingFindClusterHull.h"
@@ -94,7 +94,7 @@ namespace PCGExFindClusterHull
 		const TArray<FVector2D>& Proj = *ProjectedVtxPositions.Get();
 
 		CellsConstraints = MakeShared<PCGExClusters::FCellConstraints>(Settings->Constraints);
-		CellsConstraints->BuildWrapperCell(Cluster.ToSharedRef(), Proj, CellsConstraints);
+		CellsConstraints->BuildWrapperCell(Cluster.ToSharedRef(), Proj);
 
 		if (!CellsConstraints->WrapperCell)
 		{
