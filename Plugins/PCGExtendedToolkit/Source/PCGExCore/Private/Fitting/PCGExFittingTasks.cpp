@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Fitting/PCGExFittingTasks.h"
@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 #include "Data/PCGExPointIO.h"
 #include "Fitting/PCGExFitting.h"
-#include "Async/ParallelFor.h"
 
 namespace PCGExFitting::Tasks
 {
@@ -22,6 +21,7 @@ namespace PCGExFitting::Tasks
 		FTransform TargetTransform = FTransform::Identity;
 
 		FBox PointBounds = FBox(ForceInit);
+		FVector Translation = FVector::ZeroVector;
 
 		if (!TransformDetails->bIgnoreBounds)
 		{
@@ -33,7 +33,7 @@ namespace PCGExFitting::Tasks
 		}
 
 		PointBounds = PointBounds.ExpandBy(0.1); // Avoid NaN
-		TransformDetails->ComputeTransform(TaskIndex, TargetTransform, PointBounds);
+		TransformDetails->ComputeTransform(TaskIndex, TargetTransform, PointBounds, Translation);
 
 		const int Strategy = (TransformDetails->bInheritRotation ? 2 : 0)
 			+ (TransformDetails->bInheritScale ? 1 : 0);

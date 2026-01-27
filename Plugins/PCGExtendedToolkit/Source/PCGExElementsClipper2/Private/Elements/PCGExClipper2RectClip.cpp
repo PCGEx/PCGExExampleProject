@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/PCGExClipper2RectClip.h"
@@ -278,7 +278,7 @@ PCGExClipper2Lib::Rect64 FPCGExClipper2RectClipContext::ComputeClipRect(
 
 	for (const FVector& Corner : Corners)
 	{
-		const FVector Projected = ProjectionDetails.Project(Corner, 0);
+		const FVector Projected = ProjectionDetails.Project(Corner);
 		MinX = FMath::Min(MinX, Projected.X);
 		MaxX = FMath::Max(MaxX, Projected.X);
 		MinY = FMath::Min(MinY, Projected.Y);

@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -11,6 +11,10 @@
 #include "VT/RuntimeVirtualTextureEnum.h"
 #include "Engine/EngineTypes.h"
 #include "Paths/PCGExPathsCommon.h"
+#include "Materials/MaterialInterface.h"
+#include "UObject/SoftObjectPtr.h"
+#include "UObject/SoftObjectPath.h"
+
 
 #include "PCGExComponentDescriptors.generated.h"
 

@@ -11,6 +11,7 @@
 		"PCGExElementsBridges": "UnrealEditor-PCGExElementsBridges.dll",
 		"PCGExElementsClipper2": "UnrealEditor-PCGExElementsClipper2.dll",
 		"PCGExElementsClusters": "UnrealEditor-PCGExElementsClusters.dll",
+		"PCGExElementsFloodFill": "UnrealEditor-PCGExElementsFloodFill.dll",
 		"PCGExElementsMeta": "UnrealEditor-PCGExElementsMeta.dll",
 		"PCGExElementsPathfinding": "UnrealEditor-PCGExElementsPathfinding.dll",
 		"PCGExElementsPathfindingNavmesh": "UnrealEditor-PCGExElementsPathfindingNavmesh.dll",
@@ -21,6 +22,8 @@
 		"PCGExElementsSpatial": "UnrealEditor-PCGExElementsSpatial.dll",
 		"PCGExElementsTensors": "UnrealEditor-PCGExElementsTensors.dll",
 		"PCGExElementsTopology": "UnrealEditor-PCGExElementsTopology.dll",
+		"PCGExElementsValency": "UnrealEditor-PCGExElementsValency.dll",
+		"PCGExElementsValencyEditor": "UnrealEditor-PCGExElementsValencyEditor.dll",
 		"PCGExFilters": "UnrealEditor-PCGExFilters.dll",
 		"PCGExFoundations": "UnrealEditor-PCGExFoundations.dll",
 		"PCGExFoundationsEditor": "UnrealEditor-PCGExFoundationsEditor.dll",
@@ -29,6 +32,8 @@
 		"PCGExMatching": "UnrealEditor-PCGExMatching.dll",
 		"PCGExNoise3D": "UnrealEditor-PCGExNoise3D.dll",
 		"PCGExPickers": "UnrealEditor-PCGExPickers.dll",
+		"PCGExProperties": "UnrealEditor-PCGExProperties.dll",
+		"PCGExPropertiesEditor": "UnrealEditor-PCGExPropertiesEditor.dll",
 		"PCGExtendedToolkit": "UnrealEditor-PCGExtendedToolkit.dll",
 		"PCGExtendedToolkitEditor": "UnrealEditor-PCGExtendedToolkitEditor.dll"
 	}

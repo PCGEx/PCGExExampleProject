@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Core/PCGExSettings.h"
@@ -49,6 +49,11 @@ void UPCGExSettings::EDITOR_OpenNodeDocumentation() const
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 #endif
+
+bool UPCGExSettings::SupportsDataStealing() const
+{
+	return false;
+}
 
 bool UPCGExSettings::ShouldCache() const
 {

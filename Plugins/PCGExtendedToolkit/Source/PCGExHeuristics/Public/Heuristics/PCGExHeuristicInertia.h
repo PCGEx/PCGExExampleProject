@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -46,6 +46,8 @@ public:
 	double FallbackInertiaScore = 0;
 	int32 MaxSamples = 1;
 	bool bIgnoreIfNotEnoughSamples = true;
+
+	virtual EPCGExHeuristicCategory GetCategory() const override { return EPCGExHeuristicCategory::TravelDependent; }
 
 	virtual double GetGlobalScore(const PCGExClusters::FNode& From, const PCGExClusters::FNode& Seed, const PCGExClusters::FNode& Goal) const override;
 

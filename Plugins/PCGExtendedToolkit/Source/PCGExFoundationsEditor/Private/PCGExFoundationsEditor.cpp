@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "PCGExFoundationsEditor.h"
@@ -13,7 +13,6 @@
 #include "Details/InputSettings/PCGExClampDetailsCustomization.h"
 #include "Details/InputSettings/PCGExCompareShorthandsCustomization.h"
 #include "Details/InputSettings/PCGExInputShorthandsCustomization.h"
-#include "Details/Tuple/PCGExTupleBodyCustomization.h"
 
 void FPCGExFoundationsEditorModule::StartupModule()
 {
@@ -21,7 +20,6 @@ void FPCGExFoundationsEditorModule::StartupModule()
 
 	PCGEX_REGISTER_CUSTO_START
 
-	PCGEX_REGISTER_CUSTO("PCGExTupleBody", FPCGExTupleBodyCustomization)
 	PCGEX_REGISTER_CUSTO("PCGExApplySamplingDetails", FPCGExApplySamplingCustomization)
 
 	PCGEX_REGISTER_CUSTO("PCGExBitmask", FPCGExBitmaskCustomization)

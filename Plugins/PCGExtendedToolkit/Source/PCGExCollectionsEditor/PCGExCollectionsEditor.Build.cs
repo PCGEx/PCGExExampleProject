@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 using UnrealBuildTool;
@@ -8,7 +8,7 @@ public class PCGExCollectionsEditor : ModuleRules
 	public PCGExCollectionsEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		bUseUnity = false;
+		bUseUnity = (Target.Configuration == UnrealTargetConfiguration.Shipping);
 
 		PublicIncludePaths.AddRange(
 			new string[]
@@ -33,8 +33,11 @@ public class PCGExCollectionsEditor : ModuleRules
 				"Settings",
 				"Engine",
 				"PCG",
+				"PCGExCore",
 				"PCGExCoreEditor",
-				"PCGExCollections", 
+				"PCGExCollections",
+				"PCGExProperties",
+				"PCGExPropertiesEditor", // For FPCGExPropertyOverrides customization
 			}
 		);
 

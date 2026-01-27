@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -28,6 +28,8 @@ struct FPCGExHeuristicConfigShortestDistance : public FPCGExHeuristicConfigBase
 class FPCGExHeuristicDistance : public FPCGExHeuristicOperation
 {
 public:
+	virtual EPCGExHeuristicCategory GetCategory() const override { return EPCGExHeuristicCategory::GoalDependent; }
+
 	virtual void PrepareForCluster(const TSharedPtr<const PCGExClusters::FCluster>& InCluster) override;
 
 	virtual double GetGlobalScore(const PCGExClusters::FNode& From, const PCGExClusters::FNode& Seed, const PCGExClusters::FNode& Goal) const override;

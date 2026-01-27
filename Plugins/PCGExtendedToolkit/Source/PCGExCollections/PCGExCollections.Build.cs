@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 using UnrealBuildTool;
@@ -8,7 +8,7 @@ public class PCGExCollections : ModuleRules
 	public PCGExCollections(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		bUseUnity = false;
+		bUseUnity = (Target.Configuration == UnrealTargetConfiguration.Shipping);
 		//IWYUSupport = IWYUSupport.Full;
 
 		PublicIncludePaths.AddRange(
@@ -34,6 +34,7 @@ public class PCGExCollections : ModuleRules
 				"Niagara",
 				"PCG",
 				"PCGExCore",
+				"PCGExProperties",
 				"PCGExFilters",
 				"PCGExFoundations",
 			}

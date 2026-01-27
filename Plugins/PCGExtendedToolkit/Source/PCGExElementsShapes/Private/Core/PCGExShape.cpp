@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Core/PCGExShape.h"
@@ -12,7 +12,8 @@ namespace PCGExShapes
 		Fit = FBox(FVector::OneVector * -0.5, FVector::OneVector * 0.5);
 		FTransform OutTransform = FTransform::Identity;
 
-		Config.Fitting.ComputeTransform(Seed.Index, OutTransform, Fit, false);
+		FVector Translation = FVector::ZeroVector;
+		Config.Fitting.ComputeTransform(Seed.Index, OutTransform, Fit, Translation, false);
 
 		Fit = Fit.TransformBy(OutTransform);
 		Fit = Fit.TransformBy(Config.LocalTransform);

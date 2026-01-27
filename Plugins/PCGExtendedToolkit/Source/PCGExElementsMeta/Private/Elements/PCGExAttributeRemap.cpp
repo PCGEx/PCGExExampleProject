@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 
@@ -10,7 +10,6 @@
 #include "Data/PCGExProxyDataHelpers.h"
 #include "Details/PCGExSettingsDetails.h"
 #include "PCGExVersion.h"
-#include "Async/ParallelFor.h"
 #include "Containers/PCGExScopedContainers.h"
 #include "Data/PCGExSubSelectionOps.h"
 

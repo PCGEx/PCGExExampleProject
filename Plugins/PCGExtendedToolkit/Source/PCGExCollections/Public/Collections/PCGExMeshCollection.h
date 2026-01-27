@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -186,7 +186,7 @@ struct PCGEXCOLLECTIONS_API FPCGExMeshCollectionEntry : public FPCGExAssetCollec
 };
 
 // Mesh Collection
-UCLASS(BlueprintType, DisplayName="[PCGEx] Mesh Collection")
+UCLASS(BlueprintType, DisplayName="[PCGEx] Collection | Mesh")
 class PCGEXCOLLECTIONS_API UPCGExMeshCollection : public UPCGExAssetCollection
 {
 	GENERATED_BODY()

@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/Paths/PCGExBreakClustersToPaths.h"
@@ -245,11 +245,6 @@ namespace PCGExBreakClustersToPaths
 		TBatch<FProcessor>::RegisterBuffersDependencies(FacadePreloader);
 		PCGEX_TYPED_CONTEXT_AND_SETTINGS(BreakClustersToPaths)
 		DirectionSettings.RegisterBuffersDependencies(ExecutionContext, FacadePreloader);
-
-		if (Settings->Winding != EPCGExWindingMutation::Unchanged && Settings->ProjectionDetails.bLocalProjectionNormal)
-		{
-			FacadePreloader.Register<FVector>(Context, Settings->ProjectionDetails.LocalNormal);
-		}
 	}
 
 	void FBatch::OnProcessingPreparationComplete()

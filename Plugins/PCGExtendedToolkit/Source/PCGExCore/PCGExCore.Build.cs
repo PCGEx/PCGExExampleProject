@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 using UnrealBuildTool;
@@ -11,7 +11,7 @@ public class PCGExCore : ModuleRules
 		PublicDefinitions.Add("PCGEX_SUBMODULE_CORE_REDIRECT_ENABLED=1");
 		
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		bUseUnity = false;
+		bUseUnity = (Target.Configuration == UnrealTargetConfiguration.Shipping);
 		
 		PublicIncludePaths.AddRange(
 			new string[]

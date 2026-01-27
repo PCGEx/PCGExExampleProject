@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/PCGExTopologyPathSurface.h"
@@ -111,9 +111,7 @@ namespace PCGExTopologyPathSurface
 
 		/////
 
-		FTransform Transform = Context->GetComponent()->GetOwner()->GetTransform();
-		Transform.SetScale3D(FVector::OneVector);
-		Transform.SetRotation(FQuat::Identity);
+		FTransform Transform = PCGExTopology::GetCoordinateSpaceTransform(Settings->Topology.CoordinateSpace, Context);
 
 		InternalMesh->EditMesh([&](FDynamicMesh3& InMesh)
 		{

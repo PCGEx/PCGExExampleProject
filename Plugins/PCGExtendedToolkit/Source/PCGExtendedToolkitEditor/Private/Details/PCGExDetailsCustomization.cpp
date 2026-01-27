@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 
@@ -204,7 +204,8 @@ MACRO(EPCGExVariationMode)\
 MACRO(EPCGExVariationSnapping)\
 MACRO(EPCGExGrammarScaleMode)\
 MACRO(EPCGExSampleSource)\
-MACRO(EPCGExBitmaskMode)
+MACRO(EPCGExBitmaskMode)\
+MACRO(EPCGExCellTriageFlags)
 
 #define PCGEX_FOREACH_GRID_ENUM(MACRO)\
 MACRO(EPCGExAxisOrder, 3)\

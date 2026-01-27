@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Helpers/PCGExPointArrayDataHelpers.h"
@@ -7,7 +7,6 @@
 
 #include "PCGContext.h"
 #include "Data/PCGPointArrayData.h"
-#include "Async/ParallelFor.h"
 #include "Core/PCGExMTCommon.h"
 #include "Helpers/PCGExArrayHelpers.h"
 

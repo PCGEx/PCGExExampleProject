@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "PCGExtendedToolkitEditor.h"
@@ -84,6 +84,10 @@ void FPCGExtendedToolkitEditorModule::StartupModule()
 		PCGEX_ADD_CLASS_ICON(PCGExCustomActorDataPacker)
 		PCGEX_ADD_CLASS_ICON(PCGExBeacon)
 		PCGEX_ADD_CLASS_ICON(PCGExBitmaskCollection)
+		
+		PCGEX_ADD_CLASS_ICON(PCGExValencyBondingRules)
+		PCGEX_ADD_CLASS_ICON(PCGExValencySocketRules)
+		PCGEX_ADD_CLASS_ICON(PCGExValencyOrbitalSet)
 
 		PCGEX_REGISTER_PIN_ICON(OUT_Special)
 		PCGEX_REGISTER_PIN_ICON(IN_Special)

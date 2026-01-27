@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "PCGExElementsClusters.h"
@@ -11,7 +11,6 @@
 #endif
 
 #include "Core/PCGExClusterStates.h"
-#include "Elements/FloodFill/FillControls/PCGExFillControlsFactoryProvider.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "FPCGExElementsClustersModule"
@@ -39,7 +38,6 @@ void FPCGExElementsClustersModule::RegisterToEditor(const TSharedPtr<FSlateStyle
 
 	PCGEX_START_PCG_REGISTRATION
 	PCGEX_REGISTER_DATA_TYPE(ClusterState, ClusterState)
-	PCGEX_REGISTER_DATA_TYPE(FillControl, FillControl)
 }
 #endif
 

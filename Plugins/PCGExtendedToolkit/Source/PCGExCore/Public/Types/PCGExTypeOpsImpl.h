@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -258,4 +258,11 @@ namespace PCGExTypeOps
 
 	template <typename T>
 	EPCGMetadataTypes FTypeOpsRegistry::GetTypeId() { return &TTypeOpsImpl<T>::GetTypeId(); }
+
+	// Extern template declarations - prevents implicit instantiation in every translation unit
+	// Actual instantiations are in PCGExTypeOpsImpl.cpp
+	// This significantly reduces compilation time by avoiding template recompilation
+#define PCGEX_TPL(_TYPE, _NAME, ...) extern template struct FTypeOps<_TYPE>;
+	PCGEX_FOREACH_SUPPORTEDTYPES(PCGEX_TPL)
+#undef PCGEX_TPL
 }

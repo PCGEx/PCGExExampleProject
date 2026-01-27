@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -21,11 +21,18 @@ struct FPCGExHeuristicConfigAzimuth : public FPCGExHeuristicConfigBase
 };
 
 /**
- * 
+ *
  */
 class FPCGExHeuristicAzimuth : public FPCGExHeuristicOperation
 {
+	/** Cached edge directions for fast lookup (indexed by edge index) */
+	TArray<FVector> CachedEdgeDirections;
+
 public:
+	virtual EPCGExHeuristicCategory GetCategory() const override { return EPCGExHeuristicCategory::GoalDependent; }
+
+	virtual void PrepareForCluster(const TSharedPtr<const PCGExClusters::FCluster>& InCluster) override;
+
 	virtual double GetGlobalScore(const PCGExClusters::FNode& From, const PCGExClusters::FNode& Seed, const PCGExClusters::FNode& Goal) const override;
 
 	virtual double GetEdgeScore(const PCGExClusters::FNode& From, const PCGExClusters::FNode& To, const PCGExGraphs::FEdge& Edge, const PCGExClusters::FNode& Seed, const PCGExClusters::FNode& Goal, const TSharedPtr<PCGEx::FHashLookup> TravelStack) const override;

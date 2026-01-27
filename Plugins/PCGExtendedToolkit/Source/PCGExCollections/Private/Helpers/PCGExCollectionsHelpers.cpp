@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Helpers/PCGExCollectionsHelpers.h"
@@ -330,9 +330,10 @@ namespace PCGExCollections
 		return true;
 	}
 
-	void FPickUnpacker::UnpackPin(FPCGContext* InContext, FName InPinLabel)
+	void FPickUnpacker::UnpackPin(FPCGContext* InContext, const FName InPinLabel)
 	{
-		for (TArray<FPCGTaggedData> Params = InContext->InputData.GetParamsByPin(InPinLabel); const FPCGTaggedData& InTaggedData : Params)
+		for (TArray<FPCGTaggedData> Params = InContext->InputData.GetParamsByPin(InPinLabel.IsNone() ? Labels::SourceCollectionMapLabel : InPinLabel); 
+			const FPCGTaggedData& InTaggedData : Params)
 		{
 			const UPCGParamData* ParamData = Cast<UPCGParamData>(InTaggedData.Data);
 

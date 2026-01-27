@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -33,6 +33,7 @@ public:
 #endif
 
 protected:
+	virtual bool OutputPinsCanBeDeactivated() const override { return true; }
 	virtual TArray<FPCGPinProperties> InputPinProperties() const override;
 	virtual TArray<FPCGPinProperties> OutputPinProperties() const override;
 	virtual FPCGElementPtr CreateElement() const override;
@@ -80,6 +81,7 @@ struct FPCGExFindClusterHullContext final : FPCGExClustersProcessorContext
 	FPCGExCellArtifactsDetails Artifacts;
 
 	TSharedPtr<PCGExData::FPointIOCollection> OutputPaths;
+	TSharedPtr<PCGExData::FPointIOCollection> OutputCellBounds;
 
 	mutable FRWLock SeedOutputLock;
 

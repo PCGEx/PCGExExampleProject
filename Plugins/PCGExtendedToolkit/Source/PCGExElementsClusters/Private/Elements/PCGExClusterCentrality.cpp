@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/PCGExClusterCentrality.h"
@@ -48,7 +48,7 @@ TArray<FPCGPinProperties> UPCGExClusterCentralitySettings::InputPinProperties() 
 	return PinProperties;
 }
 
-PCGExData::EIOInit UPCGExClusterCentralitySettings::GetMainOutputInitMode() const { return PCGExData::EIOInit::Duplicate; }
+PCGExData::EIOInit UPCGExClusterCentralitySettings::GetMainOutputInitMode() const { return  StealData == EPCGExOptionState::Enabled ? PCGExData::EIOInit::Forward : PCGExData::EIOInit::Duplicate; }
 PCGExData::EIOInit UPCGExClusterCentralitySettings::GetEdgeOutputInitMode() const { return PCGExData::EIOInit::Forward; }
 
 bool FPCGExClusterCentralityElement::Boot(FPCGExContext* InContext) const

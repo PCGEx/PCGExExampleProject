@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Core/PCGExElement.h"
@@ -81,6 +81,12 @@ FPCGContext* IPCGExElement::Initialize(const FPCGInitializeElementParams& InPara
 	Context->bQuietMissingInputError = Settings->bQuietMissingInputError;
 	Context->bQuietCancellationError = Settings->bQuietCancellationError;
 	Context->bCleanupConsumableAttributes = Settings->bCleanupConsumableAttributes;
+
+	if (Settings->SupportsDataStealing()
+		&& Settings->StealData == EPCGExOptionState::Enabled)
+	{
+		Context->bWantsDataStealing = true;
+	}
 
 	Context->ElementHandle = this;
 
@@ -168,7 +174,7 @@ bool IPCGExElement::ExecuteInternal(FPCGContext* Context) const
 	const EPCGExExecutionPolicy DesiredPolicy = InSettings->GetExecutionPolicy();
 	const EPCGExExecutionPolicy LocalPolicy = DesiredPolicy == EPCGExExecutionPolicy::Default ? PCGEX_CORE_SETTINGS.ExecutionPolicy : DesiredPolicy;
 
-	if (!IsInGameThread()
+	if (IsInGameThread()
 		|| LocalPolicy == EPCGExExecutionPolicy::Ignored
 		|| LocalPolicy == EPCGExExecutionPolicy::Default
 		|| (LocalPolicy == EPCGExExecutionPolicy::NoPauseButLoop && InContext->LoopIndex != INDEX_NONE)

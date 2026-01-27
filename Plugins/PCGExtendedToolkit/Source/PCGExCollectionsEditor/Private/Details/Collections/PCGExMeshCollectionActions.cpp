@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Details/Collections/PCGExMeshCollectionActions.h"
@@ -145,7 +145,7 @@ namespace PCGExMeshCollectionActions
 
 FText FPCGExMeshCollectionActions::GetName() const
 {
-	return INVTEXT("PCGEx Mesh Collection");
+	return INVTEXT("PCGEx Collection | Mesh");
 }
 
 FString FPCGExMeshCollectionActions::GetObjectDisplayName(UObject* Object) const

@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -13,7 +13,7 @@
 
 namespace PCGExClusters
 {
-	class FHoles;
+	class FProjectedPointSet;
 }
 
 
@@ -71,7 +71,7 @@ namespace PCGExTopologyPathSurface
 	class PCGEXELEMENTSTOPOLOGY_API FProcessor : public PCGExPointsMT::TProcessor<FPCGExTopologyPathSurfaceContext, UPCGExTopologyPathSurfaceSettings>
 	{
 	protected:
-		TSharedPtr<PCGExClusters::FHoles> Holes;
+		TSharedPtr<PCGExClusters::FProjectedPointSet> Holes;
 
 		bool bIsPreviewMode = false;
 

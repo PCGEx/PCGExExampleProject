@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -156,11 +156,14 @@ namespace PCGExCollections
 
 		bool HasValidMapping() const { return !CollectionMap.IsEmpty(); }
 
+		/** Get read-only access to the collection map */
+		const TMap<uint32, UPCGExAssetCollection*>& GetCollections() const { return CollectionMap; }
+
 		/** Unpack collection mappings from an attribute set */
 		bool UnpackDataset(FPCGContext* InContext, const UPCGParamData* InAttributeSet);
 
 		/** Unpack from a specific input pin */
-		void UnpackPin(FPCGContext* InContext, FName InPinLabel);
+		void UnpackPin(FPCGContext* InContext, FName InPinLabel = NAME_None);
 
 		/** Build point partitions from point data */
 		bool BuildPartitions(const UPCGBasePointData* InPointData, TArray<FPCGMeshInstanceList>& InstanceLists);

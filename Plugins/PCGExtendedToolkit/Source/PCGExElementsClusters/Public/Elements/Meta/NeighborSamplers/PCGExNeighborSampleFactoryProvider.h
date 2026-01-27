@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -13,9 +13,9 @@
 #include "Details/PCGExBlendingDetails.h"
 #include "Factories/PCGExOperation.h"
 
-
 #include "Core/PCGExClusterFilter.h"
-#include "Elements/FloodFill/PCGExFloodFillClusters.h"
+#include "Elements/PCGExFilterVtx.h"
+#include "Sampling/PCGExSamplingCommon.h"
 #include "Utils/PCGExCurveLookup.h"
 
 #include "PCGExNeighborSampleFactoryProvider.generated.h"

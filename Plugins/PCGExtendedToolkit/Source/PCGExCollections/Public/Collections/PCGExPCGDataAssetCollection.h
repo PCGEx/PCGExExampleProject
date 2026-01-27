@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -99,7 +99,7 @@ struct PCGEXCOLLECTIONS_API FPCGExPCGDataAssetCollectionEntry : public FPCGExAss
 
 // PCGDataAsset Collection
 
-UCLASS(BlueprintType, DisplayName="[PCGEx] PCGDataAsset Collection")
+UCLASS(BlueprintType, DisplayName="[PCGEx] Collection | PCGDataAsset")
 class PCGEXCOLLECTIONS_API UPCGExPCGDataAssetCollection : public UPCGExAssetCollection
 {
 	GENERATED_BODY()

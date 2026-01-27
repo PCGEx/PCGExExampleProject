@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -49,7 +49,14 @@ namespace PCGExGraphs
 		TSharedPtr<PCGExData::FFacade> EdgesDataFacade;
 		TArray<FEdge> FlattenedEdges;
 		int32 UID = 0;
+
+		/** Legacy callback - prefer context-based callbacks for new code */
 		FSubGraphPostProcessCallback OnSubGraphPostProcess;
+
+		/** Context-based callbacks for advanced subgraph processing */
+		FCreateSubGraphContextCallback OnCreateContext;
+		FSubGraphPreCompileCallback OnPreCompile;
+		FSubGraphPostCompileCallback OnPostCompile;
 
 
 		FSubGraph() = default;
@@ -64,6 +71,8 @@ namespace PCGExGraphs
 
 		void Compile(const TWeakPtr<PCGExMT::IAsyncHandleGroup>& InParentHandle, const TSharedPtr<PCGExMT::FTaskManager>& TaskManager, const TSharedPtr<FGraphBuilder>& InBuilder);
 
+		TSharedPtr<FGraphBuilder> GetBuilder() const{ return WeakBuilder.Pin(); }
+		
 	protected:
 		TWeakPtr<PCGExMT::FTaskManager> WeakTaskManager;
 		TWeakPtr<FGraphBuilder> WeakBuilder;
@@ -71,6 +80,9 @@ namespace PCGExGraphs
 		const FGraphMetadataDetails* MetadataDetails = nullptr;
 
 		TSharedPtr<PCGExBlending::FUnionBlender> UnionBlender;
+
+		/** User-defined context created by OnCreateContext, shared between PreCompile and PostCompile */
+		TSharedPtr<FSubGraphUserContext> UserContext;
 
 		// Edge metadata
 #define PCGEX_FOREACH_EDGE_METADATA(MACRO)\

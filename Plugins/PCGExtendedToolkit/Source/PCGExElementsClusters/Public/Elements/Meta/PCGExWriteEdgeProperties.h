@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -46,6 +46,7 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override { return PCGEX_NODE_COLOR_NAME(NeighborSampler); }
 #endif
 
+	virtual bool SupportsDataStealing() const override { return true; }
 	virtual bool SupportsEdgeSorting() const override { return DirectionSettings.RequiresSortingRules(); }
 	virtual PCGExData::EIOInit GetMainOutputInitMode() const override;
 	virtual PCGExData::EIOInit GetEdgeOutputInitMode() const override;

@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Data/Utils/PCGExDataFilterDetails.h"
@@ -137,7 +137,7 @@ void FPCGExCarryOverDetails::Prune(TArray<FString>& InValues) const
 
 void FPCGExCarryOverDetails::Prune(const PCGExData::FPointIO* PointIO) const
 {
-	Prune(PointIO->GetOut()->Metadata);
+	Prune(PointIO->GetOut()->MutableMetadata());
 	Prune(PointIO->Tags.Get());
 }
 

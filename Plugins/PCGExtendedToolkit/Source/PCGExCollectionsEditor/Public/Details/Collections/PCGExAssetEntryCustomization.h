@@ -1,9 +1,11 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
 
 #include "IPropertyTypeCustomization.h"
+
+class UPCGExAssetCollection;
 
 class FPCGExAssetEntryCustomization : public IPropertyTypeCustomization
 {
@@ -20,6 +22,7 @@ public:
 
 protected:
 	TSet<FName> CustomizedTopLevelProperties;
+
 	virtual void FillCustomizedTopLevelPropertiesNames();
 
 	virtual TSharedRef<SWidget> GetAssetPicker(TSharedRef<IPropertyHandle> PropertyHandle, TSharedPtr<IPropertyHandle> IsSubCollectionHandle) =0;

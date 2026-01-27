@@ -1,4 +1,4 @@
-// Copyright 2025 Timothé Lapetite and contributors
+// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -59,7 +59,7 @@ struct PCGEXCOLLECTIONS_API FPCGExActorCollectionEntry : public FPCGExAssetColle
 };
 
 // Actor Collection
-UCLASS(BlueprintType, DisplayName="[PCGEx] Actor Collection")
+UCLASS(BlueprintType, DisplayName="[PCGEx] Collection | Actor")
 class PCGEXCOLLECTIONS_API UPCGExActorCollection : public UPCGExAssetCollection
 {
 	GENERATED_BODY()

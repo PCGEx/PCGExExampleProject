@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Details/Collections/PCGExActorCollectionActions.h"
@@ -145,7 +145,7 @@ namespace PCGExActorCollectionActions
 
 FText FPCGExActorCollectionActions::GetName() const
 {
-	return INVTEXT("PCGEx Actor Collection");
+	return INVTEXT("PCGEx Collection | Actor");
 }
 
 FString FPCGExActorCollectionActions::GetObjectDisplayName(UObject* Object) const

@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -102,6 +102,10 @@ protected:
 public:
 	virtual FName GetMainOutputPin() const override { return PCGExClusters::Labels::OutputVerticesLabel; }
 	//~End UPCGExPointsProcessorSettings
+
+	/** Distance metric used for the Voronoi diagram. Euclidean produces classic Voronoi, Manhattan/Chebyshev produce axis-aligned edge structures. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable))
+	EPCGExVoronoiMetric Metric = EPCGExVoronoiMetric::Euclidean;
 
 	/** Method used to find Voronoi cell location */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable))
@@ -211,5 +215,9 @@ namespace PCGExBuildVoronoiGraph2D
 		virtual void CompleteWork() override;
 		virtual void Write() override;
 		virtual void Output() override;
+
+	protected:
+		/** Process non-Euclidean (L1/L∞) Voronoi with extended vertex/edge output */
+		bool ProcessNonEuclidean(const TArray<FVector>& ActivePositions);
 	};
 }

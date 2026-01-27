@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -50,6 +50,7 @@ protected:
 public:
 	virtual bool SupportsEdgeSorting() const;
 	virtual bool RequiresEdgeSorting() const;
+	
 	virtual PCGExData::EIOInit GetMainOutputInitMode() const override;
 	virtual PCGExData::EIOInit GetEdgeOutputInitMode() const;
 
@@ -118,6 +119,7 @@ protected:
 
 public:
 	bool ProcessClusters(const PCGExCommon::ContextState NextStateId);
+	bool GetHasValidHeuristics() const { return bHasValidHeuristics; }
 
 protected:
 	bool CompileGraphBuilders(const bool bOutputToContext, const PCGExCommon::ContextState NextStateId);

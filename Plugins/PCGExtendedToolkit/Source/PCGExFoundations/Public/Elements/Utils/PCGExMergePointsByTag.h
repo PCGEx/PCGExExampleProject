@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -70,7 +70,7 @@ namespace PCPGExMergePointsByTag
 	};
 }
 
-UCLASS(MinimalAPI, BlueprintType, ClassGroup = (Procedural), Category="PCGEx|Misc", meta=(PCGExNodeLibraryDoc="misc/merge-points-by-tag"))
+UCLASS(MinimalAPI, BlueprintType, ClassGroup = (Procedural), Category="PCGEx|Misc", Hidden, meta=(PCGExNodeLibraryDoc="misc/merge-points-by-tag"))
 class UPCGExMergePointsByTagSettings : public UPCGExPointsProcessorSettings
 {
 	GENERATED_BODY()

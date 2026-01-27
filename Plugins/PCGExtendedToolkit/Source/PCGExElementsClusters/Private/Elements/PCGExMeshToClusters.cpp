@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #include "Elements/PCGExMeshToClusters.h"
@@ -496,7 +496,12 @@ bool FPCGExMeshToClustersElement::Boot(FPCGExContext* InContext) const
 
 	Context->StaticMeshMap = MakeShared<PCGExMesh::FGeoStaticMeshMap>();
 	Context->StaticMeshMap->DesiredTriangulationType = Settings->GraphOutputType;
-
+	
+	// Clusters currently require mesh merging, so the setting is clamped to be
+	// no less than a small nonzero value.
+	Context->StaticMeshMap->CWTolerance = PCGEx::SafeTolerance(FVector(Settings->VertexMergeHashTolerance));
+	Context->StaticMeshMap->bPreciseVertexMerge = Settings->bPreciseVertexMerge;
+	
 	Context->RootVtx = MakeShared<PCGExData::FPointIOCollection>(Context); // Make this pinless
 
 	Context->VtxChildCollection = MakeShared<PCGExData::FPointIOCollection>(Context);

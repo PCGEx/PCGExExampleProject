@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Timothé Lapetite and contributors
+﻿// Copyright 2026 Timothé Lapetite and contributors
 // Released under the MIT license https://opensource.org/license/MIT/
 
 #pragma once
@@ -44,7 +44,14 @@ namespace PCGExGraphs
 		const FPCGExGraphBuilderDetails* OutputDetails = nullptr;
 
 		FGraphCompilationEndCallback OnCompilationEndCallback;
+
+		/** Legacy callback - prefer context-based callbacks for new code */
 		FSubGraphPostProcessCallback OnSubGraphPostProcess;
+
+		/** Context-based callbacks for advanced subgraph processing */
+		FCreateSubGraphContextCallback OnCreateContext;
+		FSubGraphPreCompileCallback OnPreCompile;
+		FSubGraphPostCompileCallback OnPostCompile;
 
 		PCGExDataId PairId;
 		TSharedPtr<FGraph> Graph;
