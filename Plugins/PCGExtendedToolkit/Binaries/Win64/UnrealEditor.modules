@@ -11,6 +11,7 @@
 		"PCGExElementsBridges": "UnrealEditor-PCGExElementsBridges.dll",
 		"PCGExElementsClipper2": "UnrealEditor-PCGExElementsClipper2.dll",
 		"PCGExElementsClusters": "UnrealEditor-PCGExElementsClusters.dll",
+		"PCGExElementsFloodFill": "UnrealEditor-PCGExElementsFloodFill.dll",
 		"PCGExElementsMeta": "UnrealEditor-PCGExElementsMeta.dll",
 		"PCGExElementsPathfinding": "UnrealEditor-PCGExElementsPathfinding.dll",
 		"PCGExElementsPathfindingNavmesh": "UnrealEditor-PCGExElementsPathfindingNavmesh.dll",

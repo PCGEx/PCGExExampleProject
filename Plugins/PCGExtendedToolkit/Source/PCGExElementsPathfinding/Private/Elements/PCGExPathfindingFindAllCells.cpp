@@ -3,7 +3,6 @@
 
 #include "Elements/PCGExPathfindingFindAllCells.h"
 
-
 #include "Data/PCGExData.h"
 #include "Data/PCGPointArrayData.h"
 #include "Data/PCGExDataTags.h"
@@ -11,6 +10,9 @@
 #include "Clusters/PCGExCluster.h"
 #include "Clusters/PCGExClustersHelpers.h"
 #include "Clusters/Artifacts/PCGExCell.h"
+#include "Clusters/Artifacts/PCGExCellPathBuilder.h"
+#include "Clusters/Artifacts/PCGExPlanarFaceEnumerator.h"
+#include "Math/Geo/PCGExGeo.h"
 #include "Paths/PCGExPath.h"
 #include "Paths/PCGExPathsCommon.h"
 
@@ -54,6 +56,13 @@ bool FPCGExFindAllCellsElement::Boot(FPCGExContext* InContext) const
 	{
 		Context->Holes = MakeShared<PCGExClusters::FProjectedPointSet>(Context, Context->HolesFacade.ToSharedRef(), Settings->ProjectionDetails);
 		Context->Holes->EnsureProjected(); // Project once upfront
+	}
+
+	// Initialize hole growth (will read per-point growth attribute if needed)
+	PCGEX_FWD(HoleGrowth)
+	if (Context->HolesFacade)
+	{
+		Context->HoleGrowth.Init(Context, Context->HolesFacade);
 	}
 
 	//const TSharedPtr<PCGExData::FPointIO> SeedsPoints = PCGExData::TryGetSingleInput(Context, PCGExCommon::Labels::SourceSeedsLabel, true);
@@ -139,7 +148,7 @@ namespace PCGExFindAllCells
 		if (Context->HolesFacade)
 		{
 			Holes = Context->Holes ? Context->Holes : MakeShared<PCGExClusters::FProjectedPointSet>(Context, Context->HolesFacade.ToSharedRef(), ProjectionDetails);
-			if (Holes) { Holes->EnsureProjected(); } // Project once upfront if not already done
+			if (Holes) { Holes->EnsureProjected(); }
 		}
 
 		// Set up cell constraints
@@ -147,13 +156,72 @@ namespace PCGExFindAllCells
 		CellsConstraints->Reserve(Cluster->Edges->Num());
 		CellsConstraints->Holes = Holes;
 
-		// Build or get the shared enumerator from constraints (enables reuse)
-		TSharedPtr<PCGExClusters::FPlanarFaceEnumerator> Enumerator = CellsConstraints->GetOrBuildEnumerator(Cluster.ToSharedRef(), *ProjectedVtxPositions.Get());
+		// Build or get the shared enumerator from constraints
+		TSharedPtr<PCGExClusters::FPlanarFaceEnumerator> Enumerator = CellsConstraints->GetOrBuildEnumerator(Cluster.ToSharedRef(), ProjectionDetails);
 
-		// Enumerate all cells - wrapper detected by winding and stored in constraints if bOmitWrappingBounds
-		Enumerator->EnumerateAllFaces(ValidCells, CellsConstraints.ToSharedRef(), nullptr, Settings->Constraints.bOmitWrappingBounds);
+		// Enumerate all cells - get failed cells too if we need hole expansion
+		TArray<TSharedPtr<PCGExClusters::FCell>> FailedCells;
+		const bool bNeedFailedCells = Context->HoleGrowth.HasPotentialGrowth() && Holes;
+		Enumerator->EnumerateAllFaces(ValidCells, CellsConstraints.ToSharedRef(), bNeedFailedCells ? &FailedCells : nullptr, Settings->Constraints.bOmitWrappingBounds);
 
-		// Prepare output
+		// Process hole growth expansion if enabled
+		if (bNeedFailedCells && !FailedCells.IsEmpty())
+		{
+			// Build adjacency map
+			int32 WrapperFaceIndex = Enumerator->GetWrapperFaceIndex();
+			CellAdjacencyMap = Enumerator->GetOrBuildAdjacencyMap(WrapperFaceIndex);
+
+			// Find cells that failed due to holes and expand exclusion
+			const int32 NumHoles = Context->HolesFacade->GetNum();
+			for (const TSharedPtr<PCGExClusters::FCell>& FailedCell : FailedCells)
+			{
+				if (!FailedCell || FailedCell->Polygon.IsEmpty() || FailedCell->FaceIndex < 0) { continue; }
+
+				// Check if this cell contains a hole
+				bool bContainsHole = false;
+				int32 HoleIndex = -1;
+				for (int32 i = 0; i < NumHoles && !bContainsHole; ++i)
+				{
+					const FVector2D& HolePoint = Holes->GetProjected(i);
+					if (FailedCell->Bounds2D.IsInside(HolePoint) &&
+						PCGExMath::Geo::IsPointInPolygon(HolePoint, FailedCell->Polygon))
+					{
+						bContainsHole = true;
+						HoleIndex = i;
+					}
+				}
+
+				if (bContainsHole && HoleIndex >= 0)
+				{
+					// Mark this cell for exclusion
+					ExcludedFaceIndices.Add(FailedCell->FaceIndex);
+
+					// Expand to adjacent cells
+					const int32 Growth = Context->HoleGrowth.GetGrowth(HoleIndex);
+					if (Growth > 0)
+					{
+						ExpandHoleExclusion(HoleIndex, FailedCell->FaceIndex, Growth);
+					}
+				}
+			}
+
+			// Remove excluded cells from ValidCells
+			if (!ExcludedFaceIndices.IsEmpty())
+			{
+				ValidCells.RemoveAll([this](const TSharedPtr<PCGExClusters::FCell>& Cell)
+				{
+					return Cell && Cell->FaceIndex >= 0 && ExcludedFaceIndices.Contains(Cell->FaceIndex);
+				});
+			}
+		}
+
+		// Initialize cell processor
+		CellProcessor = MakeShared<PCGExClusters::FCellPathBuilder>();
+		CellProcessor->Cluster = Cluster;
+		CellProcessor->TaskManager = TaskManager;
+		CellProcessor->Artifacts = &Context->Artifacts;
+		CellProcessor->EdgeDataFacade = EdgeDataFacade;
+
 		const int32 NumCells = ValidCells.Num();
 
 		if (NumCells == 0)
@@ -164,7 +232,6 @@ namespace PCGExFindAllCells
 				TArray<TSharedPtr<PCGExClusters::FCell>> WrapperArray;
 				WrapperArray.Add(CellsConstraints->WrapperCell);
 
-				// Output to CellBounds if enabled
 				if (Settings->Artifacts.bOutputCellBounds)
 				{
 					TSharedPtr<PCGExData::FPointIO> OBBPointIO =
@@ -174,20 +241,17 @@ namespace PCGExFindAllCells
 					PCGExClusters::Helpers::CleanupClusterData(OBBPointIO);
 
 					PCGEX_MAKE_SHARED(OBBFacade, PCGExData::FFacade, OBBPointIO.ToSharedRef())
-					PCGExClusters::ProcessCellsAsOBBPoints(Cluster, WrapperArray, OBBFacade,
-						Context->Artifacts, TaskManager);
+					PCGExClusters::ProcessCellsAsOBBPoints(Cluster, WrapperArray, OBBFacade, Context->Artifacts, TaskManager);
 				}
 
-				// Output to Paths if enabled
 				if (Settings->Artifacts.bOutputPaths)
 				{
-					ProcessCell(CellsConstraints->WrapperCell, Context->OutputPaths->Emplace_GetRef(VtxDataFacade->Source, PCGExData::EIOInit::New));
+					CellProcessor->ProcessCell(CellsConstraints->WrapperCell, Context->OutputPaths->Emplace_GetRef(VtxDataFacade->Source, PCGExData::EIOInit::New));
 				}
 			}
 			return true;
 		}
 
-		// Output to CellBounds if enabled
 		if (Settings->Artifacts.bOutputCellBounds)
 		{
 			TSharedPtr<PCGExData::FPointIO> OBBPointIO =
@@ -197,55 +261,81 @@ namespace PCGExFindAllCells
 			PCGExClusters::Helpers::CleanupClusterData(OBBPointIO);
 
 			PCGEX_MAKE_SHARED(OBBFacade, PCGExData::FFacade, OBBPointIO.ToSharedRef())
-			PCGExClusters::ProcessCellsAsOBBPoints(Cluster, ValidCells, OBBFacade,
-				Context->Artifacts, TaskManager);
+			PCGExClusters::ProcessCellsAsOBBPoints(Cluster, ValidCells, OBBFacade, Context->Artifacts, TaskManager);
 		}
 
-		// Output to Paths if enabled
 		if (Settings->Artifacts.bOutputPaths)
 		{
 			CellsIO.Reserve(NumCells);
 			Context->OutputPaths->IncreaseReserve(NumCells + 1);
 			for (int32 i = 0; i < NumCells; i++) { CellsIO.Add(Context->OutputPaths->Emplace_GetRef(VtxDataFacade->Source, PCGExData::EIOInit::New)); }
 
-			// Process cells in parallel
 			StartParallelLoopForRange(NumCells);
 		}
 
 		return true;
 	}
 
-	void FProcessor::ProcessCell(const TSharedPtr<PCGExClusters::FCell>& InCell, const TSharedPtr<PCGExData::FPointIO>& PathIO)
-	{
-		if (!PathIO) { return; }
-
-		// Tag forwarding handled by artifacts
-		PathIO->Tags->Reset();
-
-		// Enforce IO index based on edge IO + smallest node point index, for deterministic output order
-		PathIO->IOIndex = EdgeDataFacade->Source->IOIndex * 1000000 + Cluster->GetNodePointIndex(InCell->Nodes[0]);
-
-		PCGExClusters::Helpers::CleanupClusterData(PathIO);
-
-		PCGEX_MAKE_SHARED(PathDataFacade, PCGExData::FFacade, PathIO.ToSharedRef())
-
-		TArray<int32> ReadIndices;
-		ReadIndices.SetNumUninitialized(InCell->Nodes.Num());
-
-		for (int i = 0; i < InCell->Nodes.Num(); i++) { ReadIndices[i] = Cluster->GetNodePointIndex(InCell->Nodes[i]); }
-		PathIO->InheritPoints(ReadIndices, 0);
-		InCell->PostProcessPoints(PathIO->GetOut());
-
-		Context->Artifacts.Process(Cluster, PathDataFacade, InCell);
-		PathDataFacade->WriteFastest(TaskManager);
-	}
-
 	void FProcessor::ProcessRange(const PCGExMT::FScope& Scope)
 	{
 		PCGEX_SCOPE_LOOP(Index)
 		{
-			if (const TSharedPtr<PCGExData::FPointIO> IO = CellsIO[Index]) { ProcessCell(ValidCells[Index], IO); }
+			if (const TSharedPtr<PCGExData::FPointIO> IO = CellsIO[Index])
+			{
+				CellProcessor->ProcessCell(ValidCells[Index], IO);
+			}
 			ValidCells[Index] = nullptr;
+		}
+	}
+
+	void FProcessor::ExpandHoleExclusion(int32 HoleIndex, int32 InitialFaceIndex, int32 MaxGrowth)
+	{
+		if (MaxGrowth <= 0) { return; }
+		if (CellAdjacencyMap.IsEmpty()) { return; }
+
+		TSet<int32> Visited;
+		Visited.Add(InitialFaceIndex); // Don't re-visit the initial cell
+
+		TQueue<TPair<int32, int32>> Queue; // FaceIndex, CurrentDepth
+
+		// Start with immediate neighbors (depth 1)
+		if (const TSet<int32>* Adjacent = CellAdjacencyMap.Find(InitialFaceIndex))
+		{
+			for (int32 AdjFace : *Adjacent)
+			{
+				if (AdjFace >= 0 && !Visited.Contains(AdjFace))
+				{
+					Queue.Enqueue({AdjFace, 1});
+					Visited.Add(AdjFace);
+				}
+			}
+		}
+
+		while (!Queue.IsEmpty())
+		{
+			TPair<int32, int32> Current;
+			Queue.Dequeue(Current);
+			const int32 FaceIndex = Current.Key;
+			const int32 Depth = Current.Value;
+
+			// Mark this face for exclusion
+			ExcludedFaceIndices.Add(FaceIndex);
+
+			// Continue BFS if not at max depth
+			if (Depth < MaxGrowth)
+			{
+				if (const TSet<int32>* Adjacent = CellAdjacencyMap.Find(FaceIndex))
+				{
+					for (int32 AdjFace : *Adjacent)
+					{
+						if (AdjFace >= 0 && !Visited.Contains(AdjFace))
+						{
+							Queue.Enqueue({AdjFace, Depth + 1});
+							Visited.Add(AdjFace);
+						}
+					}
+				}
+			}
 		}
 	}
 

@@ -13,7 +13,7 @@ namespace PCGExClusters
 {
 	class FProjectedPointSet;
 	class FCellConstraints;
-	class FProjectedPointSet;
+	class FCellPathBuilder;
 }
 
 namespace PCGExFindAllCells
@@ -61,6 +61,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable))
 	FPCGExCellArtifactsDetails Artifacts;
 
+	/** Hole growth settings. Expands hole exclusion to adjacent cells. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable))
+	FPCGExCellGrowthDetails HoleGrowth;
+
 	/** Output a filtered set of points containing only seeds that generated a valid path */
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Settings, meta = (PCG_Overridable))
 	//bool bOutputSeeds = false;
@@ -83,6 +87,7 @@ struct FPCGExFindAllCellsContext final : FPCGExClustersProcessorContext
 	friend class FPCGExCreateBridgeTask;
 
 	FPCGExCellArtifactsDetails Artifacts;
+	FPCGExCellGrowthDetails HoleGrowth;
 
 	TSharedPtr<PCGExClusters::FProjectedPointSet> Holes;
 	TSharedPtr<PCGExData::FFacade> HolesFacade;
@@ -112,8 +117,13 @@ namespace PCGExFindAllCells
 	{
 	protected:
 		TSharedPtr<PCGExClusters::FProjectedPointSet> Holes;
+		TSharedPtr<PCGExClusters::FCellPathBuilder> CellProcessor;
 		TArray<TSharedPtr<PCGExClusters::FCell>> ValidCells;
 		TArray<TSharedPtr<PCGExData::FPointIO>> CellsIO;
+
+		// Hole expansion tracking
+		TMap<int32, TSet<int32>> CellAdjacencyMap;
+		TSet<int32> ExcludedFaceIndices;  // Face indices to exclude due to holes or growth
 
 	public:
 		TSharedPtr<PCGExClusters::FCellConstraints> CellsConstraints;
@@ -126,9 +136,11 @@ namespace PCGExFindAllCells
 		virtual ~FProcessor() override;
 
 		virtual bool Process(const TSharedPtr<PCGExMT::FTaskManager>& InTaskManager) override;
-		void ProcessCell(const TSharedPtr<PCGExClusters::FCell>& InCell, const TSharedPtr<PCGExData::FPointIO>& PathIO);
 
 		virtual void ProcessRange(const PCGExMT::FScope& Scope) override;
+
+		/** Expand hole exclusion from initial cell to adjacent cells up to growth depth */
+		void ExpandHoleExclusion(int32 HoleIndex, int32 InitialFaceIndex, int32 MaxGrowth);
 
 		virtual void Cleanup() override;
 	};

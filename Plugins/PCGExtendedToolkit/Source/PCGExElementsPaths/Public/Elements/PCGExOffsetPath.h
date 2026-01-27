@@ -53,10 +53,10 @@ protected:
 	virtual FPCGElementPtr CreateElement() const override;
 	//~End UPCGSettings
 
-	virtual PCGExData::EIOInit GetMainDataInitializationPolicy() const override;
-
 	//~Begin UPCGExPointsProcessorSettings
 public:
+	virtual PCGExData::EIOInit GetMainDataInitializationPolicy() const override;
+
 	PCGEX_NODE_POINT_FILTER(PCGExFilters::Labels::SourceFiltersLabel, "Filters which points will be offset", PCGExFactories::PointFilters, false)
 	//~End UPCGExPointsProcessorSettings
 
@@ -138,7 +138,7 @@ namespace PCGExOffsetPath
 	class FProcessor final : public PCGExPointsMT::TProcessor<FPCGExOffsetPathContext, UPCGExOffsetPathSettings>
 	{
 		TConstPCGValueRange<FTransform> InTransforms;
-
+		
 		TSharedPtr<PCGExPaths::FPath> Path;
 		TSharedPtr<PCGExPaths::FPathEdgeHalfAngle> PathAngles;
 		TSharedPtr<PCGExPaths::TPathEdgeExtra<FVector>> OffsetDirection;

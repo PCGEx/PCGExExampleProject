@@ -6,6 +6,7 @@
 #include "Data/PCGExData.h"
 #include "Data/PCGExPointIO.h"
 #include "Details/PCGExSettingsDetails.h"
+#include "Helpers/PCGExArrayHelpers.h"
 #include "Paths/PCGExPathsHelpers.h"
 
 #define LOCTEXT_NAMESPACE "PCGExOffsetPathElement"
@@ -72,7 +73,7 @@ namespace PCGExOffsetPath
 
 		if (!IProcessor::Process(InTaskManager)) { return false; }
 
-		PCGEX_INIT_IO(PointDataFacade->Source, PCGExData::EIOInit::Duplicate)
+		PCGEX_INIT_IO(PointDataFacade->Source, Settings->GetMainDataInitializationPolicy())
 		PointDataFacade->GetOut()->AllocateProperties(EPCGPointNativeProperties::Transform);
 
 		if (Settings->bInvertDirection) { DirectionFactor *= -1; }
@@ -194,7 +195,6 @@ namespace PCGExOffsetPath
 			if (!PointFilterCache[Index]) { OutTransforms[Index].SetLocation(InTransforms[Index].GetLocation()); }
 		}
 	}
-
 }
 
 #undef LOCTEXT_NAMESPACE
