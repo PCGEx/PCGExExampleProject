@@ -1,4 +1,4 @@
-![5.7](https://img.shields.io/badge/5.7-darkgreen)
+![5.8](https://img.shields.io/badge/5.8-darkgreen)
 # PCGEx Example Project
 
 ![PCGEx](https://raw.githubusercontent.com/Nebukam/PCGExtendedToolkit/refs/heads/docs/_sources/smol-logo.png)
